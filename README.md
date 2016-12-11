@@ -1,6 +1,6 @@
 # Setup
 
-Fabrik images need a work/kernel for the host and a custom world for the jails.
+Fabrik images need a custom word/kernel for the host and a custom world for the jails.
 
 ## Setting up Build Environment
 
