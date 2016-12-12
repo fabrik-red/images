@@ -8,7 +8,7 @@ START=$(date +%s)
 RAW=disk.raw
 VMSIZE=2g
 GH_USER=nbari # fetch keys from http://github.com/__user__.keys"
-WRKDIR=/raw
+WRKDIR=/tmp
 
 # ----------------------------------------------------------------------------
 zpool list
