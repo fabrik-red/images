@@ -8,6 +8,7 @@ START=$(date +%s)
 RAW=disk.raw
 VMSIZE=2g
 GH_USER=nbari # fetch keys from http://github.com/__user__.keys"
+WRKDIR=/raw
 
 # ----------------------------------------------------------------------------
 zpool list
@@ -44,12 +45,12 @@ zfs create zroot/jails/base
 zpool set bootfs=zroot/ROOT/default zroot
 
 cd /usr/src;
-env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installworld 2>&1 host-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installkernel 2>&1 host-installkernel.log && \
-env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt distribution 2>&1 host-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installkernel 2>&1 | tee ${WRKDIR}/host-installkernel.log && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt distribution 2>&1 | tee ${WRKDIR}/host-distribution.log
 
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/mnt/jails/base installworld 2>&1 jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/mnt/jails/base distribution 2>&1 jail-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/mnt/jails/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
