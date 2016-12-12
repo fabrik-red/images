@@ -39,11 +39,17 @@ zfs create -o atime=on zroot/var/mail
 zfs create -o setuid=off zroot/var/tmp
 zfs create zroot/var/ports
 zfs create zroot/usr/obj
+zfs create -o mountpoint=/jails zroot/jails
+zfs create zroot/jails/base
 zpool set bootfs=zroot/ROOT/default zroot
 
-cd /usr/src; make DESTDIR=/mnt installworld && \
-    make DESTDIR=/mnt installkernel && \
-    make DESTDIR=/mnt distribution
+cd /usr/src;
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installworld && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installkernel && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt distribution
+
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/jails/base installworld && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/jails/base distribution
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
