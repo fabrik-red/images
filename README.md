@@ -2,6 +2,10 @@
 
 Fabrik images need a custom word/kernel for the host and a custom world for the jails.
 
+RAW image:
+
+https://fabrik.yotta.cloud/file/yotta-cloud/fabrik-freebsd-zfs.tar.gz
+
 ## Setting up Build Environment
 
 Update sources:
