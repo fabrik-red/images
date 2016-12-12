@@ -44,12 +44,12 @@ zfs create zroot/jails/base
 zpool set bootfs=zroot/ROOT/default zroot
 
 cd /usr/src;
-env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installworld && \
-env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installkernel && \
-env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt distribution
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installworld 2>&1 host-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt installkernel 2>&1 host-installkernel.log && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj make DESTDIR=/mnt distribution 2>&1 host-distribution.log
 
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/jails/base installworld && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/jails/base distribution
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/mnt/jails/base installworld 2>&1 jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/mnt/jails/base distribution 2>&1 jail-distribution.log
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
