@@ -39,4 +39,3 @@ Create a working directory, in this case `/fabrik`:
 ## Create raw images
 
 After having the workd and kernel the `zfs.sh` script can be used to create `raw` images.
-`raw` images.
