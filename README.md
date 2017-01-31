@@ -35,3 +35,6 @@ Create a working directory, in this case `/fabrik`:
     env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf make -j4 buildworld
 
 > -jX addjust X to the number of CPU cores, in this case 4
+
+After having the workd and kernel the `zfs.sh` script can be used to create `raw` images.
+`raw` images
