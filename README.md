@@ -36,5 +36,7 @@ Create a working directory, in this case `/fabrik`:
 
 > -jX addjust X to the number of CPU cores, in this case 4
 
+## Create raw images
+
 After having the workd and kernel the `zfs.sh` script can be used to create `raw` images.
-`raw` images
+`raw` images.
