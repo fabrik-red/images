@@ -4,10 +4,7 @@ Fabrik images need a custom word/kernel for the host and a custom world for the 
 
 RAW image:
 
-Router, IPSEC, PF support: https://fabrik.yotta.cloud/file/yotta-cloud/fabrik-freebsd-zfs.tar.gz
-
-
-no PF: https://fabrik.yotta.cloud/file/yotta-cloud/disk.tar.gz
+https://fabrik.yotta.cloud/file/yotta-cloud/disk.tar.gz
 
 ## Setting up Build Environment
 
