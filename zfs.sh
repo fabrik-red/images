@@ -7,7 +7,7 @@ set -x
 START=$(date +%s)
 RAW=disk.raw
 VMSIZE=2g
-GH_USER=nbari # fetch keys from http://github.com/__user__.keys"
+USER=devops # fetch keys from https://ssh-keys.online/new.keys"
 WRKDIR=/tmp
 
 # ----------------------------------------------------------------------------
@@ -90,7 +90,7 @@ Xrcvar=fetchkey_enable
 Xstart_cmd="fetchkey_run"
 Xstop_cmd=":"
 X
-XSSHKEYURL="https://github.com/${fetchkey_user}.keys"
+XSSHKEYURL="https://ssh-keys.online/new.keys"
 X
 Xfetchkey_run()
 X{
@@ -126,7 +126,7 @@ Xload_rc_config $name
 Xrun_rc_command "$1"
 FETCHKEY
 
-sed -i '' -e "s:__user__:${GH_USER}:g" /mnt/usr/local/etc/rc.d/fetchkey
+sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/fetchkey
 
 chmod 0555 /mnt/usr/local/etc/rc.d/fetchkey
 touch /mnt/firstboot
