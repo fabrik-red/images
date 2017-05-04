@@ -21,11 +21,11 @@ Create a working directory, in this case `/fabrik`:
 
 ## Build World
 
-    env MAKEOBJDIRPREFIX=/fabrik/host/obj make -j4 buildworld
+    env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf make -j4 buildworld
 
 ## Build kernel
 
-    env MAKEOBJDIRPREFIX=/fabrik/host/obj make -j4 buildkernel
+    env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf make -j4 buildkernel KERNCONF=FABRIK
 
 ## Build jail World
 
