@@ -23,26 +23,26 @@ gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
 
 sysctl vfs.zfs.min_auto_ashift=12
 
-zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off zroot /dev/gpt/disk0
-zfs create -o mountpoint=none zroot/ROOT
-zfs create -o mountpoint=/ zroot/ROOT/default
-zfs create -o mountpoint=/tmp -o exec=off -o setuid=off zroot/tmp
-zfs create -o mountpoint=/usr -o canmount=off zroot/usr
-zfs create -o mountpoint=/usr/home zroot/usr/home
-zfs create -o mountpoint=/usr/ports -o setuid=off zroot/usr/ports
-zfs create zroot/usr/src
-zfs create -o mountpoint=/var -o canmount=off zroot/var
-zfs create -o exec=off -o setuid=off zroot/var/audit
-zfs create -o exec=off -o setuid=off zroot/var/crash
-zfs create -o exec=off -o setuid=off zroot/var/log
-zfs create -o exec=off -o setuid=off -o readonly=on zroot/var/empty
-zfs create -o atime=on zroot/var/mail
-zfs create -o setuid=off zroot/var/tmp
-zfs create zroot/var/ports
-zfs create zroot/usr/obj
-zfs create -o mountpoint=/jails zroot/jails
-zfs create zroot/jails/base
-zpool set bootfs=zroot/ROOT/default zroot
+zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off fabrik /dev/gpt/disk0
+zfs create -o mountpoint=none fabrik/ROOT
+zfs create -o mountpoint=/ fabrik/ROOT/default
+zfs create -o mountpoint=/tmp -o exec=off -o setuid=off fabrik/tmp
+zfs create -o mountpoint=/usr -o canmount=off fabrik/usr
+zfs create -o mountpoint=/usr/home fabrik/usr/home
+zfs create -o mountpoint=/usr/ports -o setuid=off fabrik/usr/ports
+zfs create fabrik/usr/src
+zfs create -o mountpoint=/var -o canmount=off fabrik/var
+zfs create -o exec=off -o setuid=off fabrik/var/audit
+zfs create -o exec=off -o setuid=off fabrik/var/crash
+zfs create -o exec=off -o setuid=off fabrik/var/log
+zfs create -o exec=off -o setuid=off -o readonly=on fabrik/var/empty
+zfs create -o atime=on fabrik/var/mail
+zfs create -o setuid=off fabrik/var/tmp
+zfs create fabrik/var/ports
+zfs create fabrik/usr/obj
+zfs create -o mountpoint=/jails fabrik/jails
+zfs create fabrik/jails/base
+zpool set bootfs=fabrik/ROOT/default fabrik
 
 cd /usr/src;
 env MAKEOBJDIRPREFIX=/fabrik/host/obj make SRCCONF=/etc/fabrik-src-jail.conf DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
@@ -54,7 +54,7 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj make SRCCONF=/etc/src-jail.conf DESTDIR=/m
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
-chroot /mnt /usr/bin/newaliases
+# chroot /mnt /usr/bin/newaliases
 chroot /mnt /etc/rc.d/ldconfig forcestart
 umount /mnt/dev
 
@@ -174,7 +174,7 @@ security.bsd.unprivileged_proc_debug=0
 security.bsd.stack_guard_page=1
 EOF
 
-zpool export zroot
+zpool export fabrik
 mdconfig -d -u ${mddev}
 chflags -R noschg /mnt
 rm -rf /mnt/*
