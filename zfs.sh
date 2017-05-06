@@ -12,6 +12,7 @@ WRKDIR=/tmp
 
 # ----------------------------------------------------------------------------
 zpool list
+rm -f ${RAW}
 truncate -s ${VMSIZE} ${RAW}
 mddev=$(mdconfig -a -t vnode -f ${RAW})
 
