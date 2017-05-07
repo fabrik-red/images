@@ -155,7 +155,7 @@ EOF
 cat << EOF > /mnt/etc/rc.conf
 fetchkey_enable="YES"
 zfs_enable="YES"
-ifconfig_DEFAULT="SYNCDHCP"
+ifconfig_DEFAULT="SYNCDHCP -tso"
 clear_tmp_enable="YES"
 dumpdev="NO"
 ntpd_enable="YES"
