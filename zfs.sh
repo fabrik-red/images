@@ -91,7 +91,8 @@ Xrcvar=fetchkey_enable
 Xstart_cmd="fetchkey_run"
 Xstop_cmd=":"
 X
-XSSHKEYURL="https://ssh-keys.online/new.keys"
+XSSHKEYURL_AWS="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
+XSSHKEYURL_ONLINE="https://ssh-keys.online/new.keys"
 X
 Xfetchkey_run()
 X{
@@ -107,14 +108,15 @@ X
 X	# Grab the provided SSH public key and add it to the
 X	# right authorized_keys file to allow it to be used to
 X	# log in as the specified user.
-X	echo "Fetching SSH public key for ${fetchkey_user}"
 X	mkdir -p `dirname ${SSHKEYFILE}`
 X	chmod 700 `dirname ${SSHKEYFILE}`
 X	chown ${fetchkey_user} `dirname ${SSHKEYFILE}`
-X	fetch --no-verify-peer -o ${SSHKEYFILE}.keys -a ${SSHKEYURL} >/dev/null
-X	if [ -f ${SSHKEYFILE}.keys ]; then
+X	echo "Fetching SSH public key for ${fetchkey_user}"
+X	fetch --no-verify-peer -o ${SSHKEYFILE}.aws.keys -a -T 5 ${SSHKEYURL_AWS} >/dev/null
+X	fetch --no-verify-peer -o ${SSHKEYFILE}.online.keys -a ${SSHKEYURL_ONLINE} >/dev/null
+X	if [ -f ${SSHKEYFILE}.aws.keys -o -f ${SSHKEYFILE}.online.keys ]; then
 X		touch ${SSHKEYFILE}
-X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.keys > ${SSHKEYFILE}.tmp
+X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.aws.keys ${SSHKEYFILE}.online.keys > ${SSHKEYFILE}.tmp
 X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
 X		chown ${fetchkey_user} ${SSHKEYFILE}
 X		rm ${SSHKEYFILE}.keys
