@@ -119,7 +119,8 @@ X		touch ${SSHKEYFILE}
 X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.aws.keys ${SSHKEYFILE}.online.keys > ${SSHKEYFILE}.tmp
 X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
 X		chown ${fetchkey_user} ${SSHKEYFILE}
-X		rm ${SSHKEYFILE}.keys
+X		rm ${SSHKEYFILE}.aws.keys
+X		rm ${SSHKEYFILE}.online.keys
 X	else
 X		echo "Fetching SSH public key failed!"
 X	fi
