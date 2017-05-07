@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------
 # All in one
 # ----------------------------------------------------------------------------
-NUMBER_OF_CORES=36
+NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 USER=devops # user to be created on firstboot
 
