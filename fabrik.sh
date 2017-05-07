@@ -83,12 +83,12 @@ zfs create zroot/jails/base
 zpool set bootfs=zroot/ROOT/default zroot
 
 cd /usr/src;
-env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf make DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf make DESTDIR=/mnt installkernel KERNCONF=FABRIK 2>&1 | tee ${WRKDIR}/host-installkernel.log && \
-env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf make DESTDIR=/mnt distribution 2>&1 | tee ${WRKDIR}/host-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt installkernel KERNCONF=FABRIK 2>&1 | tee ${WRKDIR}/host-installkernel.log && \
+env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt distribution 2>&1 | tee ${WRKDIR}/host-distribution.log
 
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf make DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf make DESTDIR=/mnt/jails/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt/jails/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
