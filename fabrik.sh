@@ -6,6 +6,7 @@
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 USER=devops # user to be created on firstboot
+ZPOOL=zroot
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
@@ -49,11 +50,6 @@ VMSIZE=2g
 WRKDIR=/tmp
 
 # ----------------------------------------------------------------------------
-# to avoid a warning due not valid hostname
-# ----------------------------------------------------------------------------
-hostname build.fabrik.red
-
-# ----------------------------------------------------------------------------
 zpool list
 rm -f ${RAW}
 truncate -s ${VMSIZE} ${RAW}
@@ -67,26 +63,26 @@ gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
 
 sysctl vfs.zfs.min_auto_ashift=12
 
-zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off zroot /dev/gpt/disk0
-zfs create -o mountpoint=none zroot/ROOT
-zfs create -o mountpoint=/ zroot/ROOT/default
-zfs create -o mountpoint=/tmp -o exec=off -o setuid=off zroot/tmp
-zfs create -o mountpoint=/usr -o canmount=off zroot/usr
-zfs create -o mountpoint=/usr/home zroot/usr/home
-zfs create -o mountpoint=/usr/ports -o setuid=off zroot/usr/ports
-zfs create zroot/usr/src
-zfs create -o mountpoint=/var -o canmount=off zroot/var
-zfs create -o exec=off -o setuid=off zroot/var/audit
-zfs create -o exec=off -o setuid=off zroot/var/crash
-zfs create -o exec=off -o setuid=off zroot/var/log
-zfs create -o exec=off -o setuid=off -o readonly=on zroot/var/empty
-zfs create -o atime=on zroot/var/mail
-zfs create -o setuid=off zroot/var/tmp
-zfs create zroot/var/ports
-zfs create zroot/usr/obj
-zfs create -o mountpoint=/jails zroot/jails
-zfs create zroot/jails/base
-zpool set bootfs=zroot/ROOT/default zroot
+zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
+zfs create -o mountpoint=none ${ZPOOL}/ROOT
+zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
+zfs create -o mountpoint=/tmp -o exec=off -o setuid=off ${ZPOOL}/tmp
+zfs create -o mountpoint=/usr -o canmount=off ${ZPOOL}/usr
+zfs create -o mountpoint=/usr/home ${ZPOOL}/usr/home
+zfs create -o mountpoint=/usr/ports -o setuid=off ${ZPOOL}/usr/ports
+zfs create ${ZPOOL}/usr/src
+zfs create -o mountpoint=/var -o canmount=off ${ZPOOL}/var
+zfs create -o exec=off -o setuid=off ${ZPOOL}/var/audit
+zfs create -o exec=off -o setuid=off ${ZPOOL}/var/crash
+zfs create -o exec=off -o setuid=off ${ZPOOL}/var/log
+zfs create -o exec=off -o setuid=off -o readonly=on ${ZPOOL}/var/empty
+zfs create -o atime=on ${ZPOOL}/var/mail
+zfs create -o setuid=off ${ZPOOL}/var/tmp
+zfs create ${ZPOOL}/var/ports
+zfs create ${ZPOOL}/usr/obj
+zfs create -o mountpoint=/jails ${ZPOOL}/jails
+zfs create ${ZPOOL}/jails/base
+zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
 
 cd /usr/src;
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
@@ -98,7 +94,6 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/et
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
-chroot /mnt /usr/bin/newaliases
 chroot /mnt /etc/rc.d/ldconfig forcestart
 umount /mnt/dev
 
@@ -199,7 +194,7 @@ EOF
 cat << EOF > /mnt/etc/rc.conf
 fetchkey_enable="YES"
 zfs_enable="YES"
-ifconfig_DEFAULT="SYNCDHCP -tso"
+ifconfig_DEFAULT="SYNCDHCP"
 clear_tmp_enable="YES"
 dumpdev="NO"
 ntpd_enable="YES"
@@ -221,7 +216,7 @@ security.bsd.unprivileged_proc_debug=0
 security.bsd.stack_guard_page=1
 EOF
 
-zpool export zroot
+zpool export ${ZPOOL}
 mdconfig -d -u ${mddev}
 chflags -R noschg /mnt
 rm -rf /mnt/*
