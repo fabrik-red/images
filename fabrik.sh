@@ -108,6 +108,7 @@ nameserver 2001:4860:4860::8888
 nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
+chroot /mnt mkdir -p /usr/local/etc/rc.d
 sed 's/^X//' >/mnt/usr/local/etc/rc.d/fetchkey << 'FETCHKEY'
 X#!/bin/sh
 X# PROVIDE: fetchkey
