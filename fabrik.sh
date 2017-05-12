@@ -7,12 +7,12 @@ NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 USER=devops # user to be created on firstboot
 ZPOOL=zroot
+SSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOzFY7MEt3G4HwAtqtRkpdWYWI4PIGCPLG90L3VdtMM fabrik"
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
 # ----------------------------------------------------------------------------
 START=$(date +%s)
-
 
 # ----------------------------------------------------------------------------
 # update sources
@@ -95,6 +95,9 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/et
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
 chroot /mnt /etc/rc.d/ldconfig forcestart
+chroot /mnt pw useradd devops -m -G wheel -s /bin/csh -h 0 <<EOP
+fabrik
+EOP
 umount /mnt/dev
 
 # /etc/resolv.conf
@@ -105,12 +108,8 @@ nameserver 2001:4860:4860::8888
 nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
-# user fetch keys from github
-chroot /mnt mkdir -p /usr/local/etc/rc.d
 sed 's/^X//' >/mnt/usr/local/etc/rc.d/fetchkey << 'FETCHKEY'
 X#!/bin/sh
-X
-X# KEYWORD: firstboot
 X# PROVIDE: fetchkey
 X# REQUIRE: NETWORKING
 X# BEFORE: LOGIN
@@ -132,12 +131,7 @@ X
 XSSHKEYURL_AWS="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
 XSSHKEYURL_ONLINE="https://ssh-keys.online/new.keys"
 X
-Xfetchkey_run()
-X{
-X	# If the user does not exist, create it.
-X	if ! grep -q "^${fetchkey_user}:" /etc/passwd; then
-X		echo "Creating user ${fetchkey_user}"
-X		pw useradd ${fetchkey_user} -m -G wheel
+pw useradd ${fetchkey_user} -m -G wheel
 X	fi
 X
 X	# Figure out where the SSH public key needs to go.
