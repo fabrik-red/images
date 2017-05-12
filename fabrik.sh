@@ -6,7 +6,7 @@
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 USER=devops # user to be created on firstboot
-ZPOOL=zroot
+ZPOOL=fabrik
 SSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOzFY7MEt3G4HwAtqtRkpdWYWI4PIGCPLG90L3VdtMM fabrik"
 
 # ----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ zfs create ${ZPOOL}/var/ports
 zfs create ${ZPOOL}/usr/obj
 zfs create -o mountpoint=/jails ${ZPOOL}/jails
 zfs create ${ZPOOL}/jails/base
-zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
+zpool set bootfs=zroot/ROOT/default ${ZPOOL}
 
 cd /usr/src;
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
