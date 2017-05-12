@@ -55,8 +55,10 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf make DESTDIR=/m
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
-chroot /mnt /usr/bin/newaliases
 chroot /mnt /etc/rc.d/ldconfig forcestart
+chroot /mnt pw useradd devops -m -G wheel -s /bin/csh -h 0 <<EOP
+fabrik
+EOP
 umount /mnt/dev
 
 # /etc/resolv.conf
