@@ -6,8 +6,8 @@
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 USER=devops # user to be created on firstboot
+PASSWORD=fabrik
 ZPOOL=zroot
-SSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOzFY7MEt3G4HwAtqtRkpdWYWI4PIGCPLG90L3VdtMM fabrik"
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
@@ -95,8 +95,8 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/et
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
 chroot /mnt /etc/rc.d/ldconfig forcestart
-chroot /mnt pw useradd devops -m -G wheel -s /bin/csh -h 0 <<EOP
-fabrik
+chroot /mnt pw useradd ${USER} -m -G wheel -s /bin/csh -h 0 <<EOP
+${PASSWORD}
 EOP
 umount /mnt/dev
 
@@ -109,64 +109,37 @@ nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
 chroot /mnt mkdir -p /usr/local/etc/rc.d
-sed 's/^X//' >/mnt/usr/local/etc/rc.d/fetchkey << 'FETCHKEY'
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/resizezfs << 'RESIZEZFS'
 X#!/bin/sh
-X# PROVIDE: fetchkey
-X# REQUIRE: NETWORKING
+X
+X# KEYWORD: firstboot
+X# PROVIDE: resizezfs
 X# BEFORE: LOGIN
-X
-X# Define fetchkey_enable=YES in /etc/rc.conf to enable SSH key fetching
-X# when the system first boots.
-X: ${fetchkey_enable=NO}
-X
-X# Set fetchkey_user to change the user for which SSH keys are provided.
-X: ${fetchkey_user=__user__}
 X
 X. /etc/rc.subr
 X
-Xname="fetchkey"
-Xrcvar=fetchkey_enable
-Xstart_cmd="fetchkey_run"
+Xname="resizezfs"
+Xrcvar=resizezfs_enable
+Xstart_cmd="${name}_run"
 Xstop_cmd=":"
 X
-XSSHKEYURL_AWS="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
-XSSHKEYURL_ONLINE="https://ssh-keys.online/new.keys"
-X
-pw useradd ${fetchkey_user} -m -G wheel
-X	fi
-X
-X	# Figure out where the SSH public key needs to go.
-X	eval SSHKEYFILE="~${fetchkey_user}/.ssh/authorized_keys"
-X
-X	# Grab the provided SSH public key and add it to the
-X	# right authorized_keys file to allow it to be used to
-X	# log in as the specified user.
-X	mkdir -p `dirname ${SSHKEYFILE}`
-X	chmod 700 `dirname ${SSHKEYFILE}`
-X	chown ${fetchkey_user} `dirname ${SSHKEYFILE}`
-X	echo "Fetching SSH public key for ${fetchkey_user}"
-X	fetch --no-verify-peer -o ${SSHKEYFILE}.aws.keys -a -T 5 ${SSHKEYURL_AWS} >/dev/null
-X	fetch --no-verify-peer -o ${SSHKEYFILE}.online.keys -a ${SSHKEYURL_ONLINE} >/dev/null
-X	if [ -f ${SSHKEYFILE}.aws.keys -o -f ${SSHKEYFILE}.online.keys ]; then
-X		touch ${SSHKEYFILE}
-X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.aws.keys ${SSHKEYFILE}.online.keys > ${SSHKEYFILE}.tmp
-X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
-X		chown ${fetchkey_user} ${SSHKEYFILE}
-X		rm ${SSHKEYFILE}.aws.keys
-X		rm ${SSHKEYFILE}.online.keys
-X	else
-X		echo "Fetching SSH public key failed!"
-X	fi
+Xresizezfs_run()
+X{
+X       DISK=$(gpart list | awk '/Geom name/{split($0,a,":"); print a[2]}')
+X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,":"); print arr[2]; flag=0}')
+X       gpart recover ${DISK}
+X       gpart resize -i 3 ${DISK}
+X       zpool online -e zroot ${GUID}
+X       zfs set readonly=off zroot/ROOT/default
 X}
 X
 Xload_rc_config $name
 Xrun_rc_command "$1"
-FETCHKEY
+RESIZEZFS
 
-sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/fetchkey
-
-chmod 0555 /mnt/usr/local/etc/rc.d/fetchkey
+chmod 0555 /mnt/usr/local/etc/rc.d/resizezfs
 touch /mnt/firstboot
+touch /mnt/firstboot-reboot
 
 # /etc/fstab
 cat << EOF > /mnt/etc/fstab
@@ -187,7 +160,7 @@ EOF
 
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
-fetchkey_enable="YES"
+resizezfs_enable="YES"
 zfs_enable="YES"
 ifconfig_DEFAULT="SYNCDHCP"
 clear_tmp_enable="YES"
@@ -197,6 +170,8 @@ ntpdate_enable="YES"
 sendmail_enable="NONE"
 sshd_enable="YES"
 syslogd_flags="-ssC"
+jail_enable="YES"
+jail_list="base"
 EOF
 
 # /etc/sysctl.conf
@@ -209,6 +184,41 @@ security.bsd.see_other_gids=0
 security.bsd.unprivileged_read_msgbuf=0
 security.bsd.unprivileged_proc_debug=0
 security.bsd.stack_guard_page=1
+EOF
+
+# /etc/jail.conf
+cat << EOF > /mnt/etc/jail.conf
+exec.start = "/bin/sh /etc/rc";
+exec.stop = "/bin/sh /etc/rc.shutdown";
+exec.clean;
+mount.devfs;
+allow.raw_sockets;
+securelevel=3;
+host.hostname="\$name.hostname";
+path="/zroot/jails/\$name";
+
+base {
+    jid = 10;
+    ip4.addr = 127.0.0.2;
+}
+EOF
+
+# jail rc.conf
+cat << EOF > /mnt/jails/base/etc/rc.conf
+sshd_enable="YES"
+sshd_flags="-4"
+syslogd_flags="-ssC"
+clear_tmp_enable="YES"
+sendmail_enable="NONE"
+cron_flags="\$cron_flags -J 60"
+EOF
+
+# jail /etc/resolv.conf
+cat << EOF > /mnt/jails/base/etc/resolv.conf
+nameserver 4.2.2.2
+nameserver 8.8.4.4
+nameserver 2001:4860:4860::8888
+nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
 zpool export ${ZPOOL}
