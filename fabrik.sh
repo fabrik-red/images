@@ -139,7 +139,6 @@ RESIZEZFS
 
 chmod 0555 /mnt/usr/local/etc/rc.d/resizezfs
 touch /mnt/firstboot
-touch /mnt/firstboot-reboot
 
 # /etc/fstab
 cat << EOF > /mnt/etc/fstab
@@ -170,7 +169,7 @@ ntpdate_enable="YES"
 sendmail_enable="NONE"
 sshd_enable="YES"
 syslogd_flags="-ssC"
-jail_enable="YES"
+jail_enable="NO"
 jail_list="base"
 EOF
 
@@ -195,11 +194,11 @@ mount.devfs;
 allow.raw_sockets;
 securelevel=3;
 host.hostname="\$name.hostname";
-path="/zroot/jails/\$name";
+path="/jails/\$name";
 
 base {
     jid = 10;
-    ip4.addr = 127.0.0.2;
+    ip6.addr = vtnet0|2001:2ba0:fffd::2;
 }
 EOF
 
