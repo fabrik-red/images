@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
-USER=devops # user to be created on firstboot
+USER=devops
 PASSWORD=fabrik
 ZPOOL=zroot
 
@@ -31,7 +31,7 @@ fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/fabrik.ker
 # create fabrik dir
 # ----------------------------------------------------------------------------
 mkdir -p /fabrik/host
-mkdir -p /fabrik/jail
+mkdir /fabrik/jail
 
 # ----------------------------------------------------------------------------
 # build world, kernel and jail world
@@ -95,19 +95,19 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/et
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
 chroot /mnt /etc/rc.d/ldconfig forcestart
+
+# ----------------------------------------------------------------------------
+# create user and set password
+# ----------------------------------------------------------------------------
 chroot /mnt pw useradd ${USER} -m -G wheel -s /bin/csh -h 0 <<EOP
 ${PASSWORD}
 EOP
+
 umount /mnt/dev
 
-# /etc/resolv.conf
-cat << EOF > /mnt/etc/resolv.conf
-nameserver 4.2.2.2
-nameserver 8.8.8.8
-nameserver 2001:4860:4860::8888
-nameserver 2001:1608:10:25::1c04:b12f
-EOF
-
+# ----------------------------------------------------------------------------
+# resizezfs script to be run on firstboot
+# ----------------------------------------------------------------------------
 chroot /mnt mkdir -p /usr/local/etc/rc.d
 sed 's/^X//' >/mnt/usr/local/etc/rc.d/resizezfs << 'RESIZEZFS'
 X#!/bin/sh
@@ -143,6 +143,14 @@ touch /mnt/firstboot
 # /etc/fstab
 cat << EOF > /mnt/etc/fstab
 /dev/gpt/swap0   none    swap    sw      0       0
+EOF
+
+# /etc/resolv.conf
+cat << EOF > /mnt/etc/resolv.conf
+nameserver 4.2.2.2
+nameserver 8.8.8.8
+nameserver 2001:4860:4860::8888
+nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
 # /boot/loader.conf
