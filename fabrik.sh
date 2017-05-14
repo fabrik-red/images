@@ -1,7 +1,6 @@
 #!/bin/sh -ex
-
 # ----------------------------------------------------------------------------
-# All in one
+# fabrik.sh - All in one script to create the disk.raw image
 # ----------------------------------------------------------------------------
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
@@ -68,20 +67,24 @@ zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
 zfs create -o mountpoint=/tmp -o exec=off -o setuid=off ${ZPOOL}/tmp
 zfs create -o mountpoint=/usr -o canmount=off ${ZPOOL}/usr
-zfs create -o mountpoint=/usr/home ${ZPOOL}/usr/home
-zfs create -o mountpoint=/usr/ports -o setuid=off ${ZPOOL}/usr/ports
-zfs create ${ZPOOL}/usr/src
+zfs create ${ZPOOL}/usr/home
+zfs create ${ZPOOL}/usr/obj
+zfs create -o setuid=off -o compression=lz4 ${ZPOOL}/usr/ports
+zfs create -o setuid=off -o compression=off ${ZPOOL}/usr/ports/distfiles
+zfs create -o setuid=off -o compression=off ${ZPOOL}/usr/ports/packages
+zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/usr/src
 zfs create -o mountpoint=/var -o canmount=off ${ZPOOL}/var
 zfs create -o exec=off -o setuid=off ${ZPOOL}/var/audit
-zfs create -o exec=off -o setuid=off ${ZPOOL}/var/crash
-zfs create -o exec=off -o setuid=off ${ZPOOL}/var/log
+zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/var/crash
+zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/var/log
 zfs create -o exec=off -o setuid=off -o readonly=on ${ZPOOL}/var/empty
-zfs create -o atime=on ${ZPOOL}/var/mail
-zfs create -o setuid=off ${ZPOOL}/var/tmp
+zfs create -o atime=on -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/var/mail
+zfs create -o setuid=off -o compression=lz4 ${ZPOOL}/var/tmp
 zfs create ${ZPOOL}/var/ports
-zfs create ${ZPOOL}/usr/obj
 zfs create -o mountpoint=/jails ${ZPOOL}/jails
 zfs create ${ZPOOL}/jails/base
+zfs create -o exec=off -o setuid=off ${ZPOOL}/jails/base/tmp
+zfs set quota=10G ${ZPOOL}/jails/base
 zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
 
 cd /usr/src;
@@ -145,14 +148,6 @@ cat << EOF > /mnt/etc/fstab
 /dev/gpt/swap0   none    swap    sw      0       0
 EOF
 
-# /etc/resolv.conf
-cat << EOF > /mnt/etc/resolv.conf
-nameserver 4.2.2.2
-nameserver 8.8.8.8
-nameserver 2001:4860:4860::8888
-nameserver 2001:1608:10:25::1c04:b12f
-EOF
-
 # /boot/loader.conf
 cat << EOF > /mnt/boot/loader.conf
 autoboot_delay="-1"
@@ -177,8 +172,28 @@ ntpdate_enable="YES"
 sendmail_enable="NONE"
 sshd_enable="YES"
 syslogd_flags="-ssC"
+cloned_interfaces="lo1"
+ipv4_addrs_lo1="172.16.13.1-6/29"
+#-----------------------------------------------------------------------
+# pf
+#-----------------------------------------------------------------------
+pf_enable="YES"
+pf_rules="/etc/pf.conf"
+pflog_enable="YES"
+pflog_logfile="/var/log/pflog"
+#-----------------------------------------------------------------------
+# jails
+#-----------------------------------------------------------------------
 jail_enable="NO"
 jail_list="base"
+EOF
+
+# /etc/pf.conf
+cat << EOF > /mnt/etc/pf.conf
+ext_if = "vnet0"
+scrub in all
+nat on \$ext_if from lo1:network to any -> (\$ext_if)
+pass all
 EOF
 
 # /etc/sysctl.conf
@@ -206,7 +221,7 @@ path="/jails/\$name";
 
 base {
     jid = 10;
-    ip6.addr = vtnet0|2001:2ba0:fffd::2;
+    ip4.addr = vtnet0|172.16.13.2/29;
 }
 EOF
 
