@@ -118,36 +118,39 @@ umount /mnt/dev
 # resizezfs script to be run on firstboot
 # ----------------------------------------------------------------------------
 chroot /mnt mkdir -p /usr/local/etc/rc.d
-sed 's/^X//' >/mnt/usr/local/etc/rc.d/resizezfs << 'RESIZEZFS'
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/resizezfs << 'FIRSTBOOT'
 X#!/bin/sh
 X
 X# KEYWORD: firstboot
-X# PROVIDE: resizezfs
+X# PROVIDE: firstboot
+X# REQUIRE: NETWORKING
 X# BEFORE: LOGIN
 X
 X. /etc/rc.subr
 X
-Xname="resizezfs"
-Xrcvar=resizezfs_enable
+Xname="firstboot"
+Xrcvar=firstboot_enable
 Xstart_cmd="${name}_run"
 Xstop_cmd=":"
 X
-Xresizezfs_run()
+Xfirstboot_run()
 X{
-X       DISK=$(gpart list | awk '/Geom name/{split($0,a,":"); print a[2]}')
-X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,":"); print arr[2]; flag=0}')
+X       DISK=$(gpart list | awk '/Geom name/{split($0,a,": "); print a[2]}')
+X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,": "); print arr[2]; flag=0}')
+X       NIC=$(route get default | awk '/interface:/{split($0,a,": "); print a[2]}')
 X       gpart recover ${DISK}
 X       gpart resize -i 3 ${DISK}
 X       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
-X       [ -w /COPYRIGHT ] && echo "zfs read/write OK" || zfs set readonly=off zroot/ROOT/default
+X       sed -i '' -e "s:vtnet0:${NIC}:g" /etc/pf.conf && sysrc jail_enable="YES"
 X}
 X
 Xload_rc_config $name
 Xrun_rc_command "$1"
-RESIZEZFS
+FIRSTBOOT
 
 chmod 0555 /mnt/usr/local/etc/rc.d/resizezfs
 touch /mnt/firstboot
+touch /mnt/firstboot-reboot
 
 # /etc/fstab
 cat << EOF > /mnt/etc/fstab
@@ -170,7 +173,7 @@ EOF
 
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
-resizezfs_enable="YES"
+firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 ifconfig_DEFAULT="SYNCDHCP"
