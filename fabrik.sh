@@ -326,7 +326,5 @@ END=$(date +%s)
 DIFF=$(echo "$END - $START" | bc)
 
 echo ------------------------------
-echo "Started: $START"
-echo "Ended: $END"
 echo "build in $DIFF seconds."
 echo ------------------------------
