@@ -30,7 +30,7 @@ fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/fabrik.ker
 # create fabrik dir
 # ----------------------------------------------------------------------------
 mkdir -p /fabrik/host
-mkdir /fabrik/jail
+mkdir -p /fabrik/jail
 
 # ----------------------------------------------------------------------------
 # build world, kernel and jail world
