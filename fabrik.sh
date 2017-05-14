@@ -115,10 +115,10 @@ EOP
 umount /mnt/dev
 
 # ----------------------------------------------------------------------------
-# resizezfs script to be run on firstboot
+# firstboot script to be run only once at firstboot
 # ----------------------------------------------------------------------------
 chroot /mnt mkdir -p /usr/local/etc/rc.d
-sed 's/^X//' >/mnt/usr/local/etc/rc.d/resizezfs << 'FIRSTBOOT'
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/firstboot << 'FIRSTBOOT'
 X#!/bin/sh
 X
 X# KEYWORD: firstboot
@@ -137,10 +137,11 @@ Xfirstboot_run()
 X{
 X       DISK=$(gpart list | awk '/Geom name/{split($0,a,": "); print a[2]}')
 X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,": "); print arr[2]; flag=0}')
-X       NIC=$(route get default | awk '/interface:/{split($0,a,": "); print a[2]}')
 X       gpart recover ${DISK}
 X       gpart resize -i 3 ${DISK}
 X       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
+X
+X       NIC=$(route get default | awk '/interface:/{split($0,a,": "); print a[2]}')
 X       sed -i '' -e "s:vtnet0:${NIC}:g" /etc/pf.conf && sysrc jail_enable="YES"
 X}
 X
@@ -148,6 +149,13 @@ Xload_rc_config $name
 Xrun_rc_command "$1"
 FIRSTBOOT
 
+chmod 0555 /mnt/usr/local/etc/rc.d/firstboot
+touch /mnt/firstboot
+touch /mnt/firstboot-reboot
+
+# ----------------------------------------------------------------------------
+# .cshrc
+# ----------------------------------------------------------------------------
 sed 's/^X//' >/mnt/root/.cshrc << 'CSHRC'
 Xalias h  history 25
 Xalias j  jobs -l
@@ -202,12 +210,7 @@ X  endif
 X
 Xendif
 CSHRC
-
 cp -f /mnt/root/.cshrc /mnt/usr/home/devops/.cshrc
-
-chmod 0555 /mnt/usr/local/etc/rc.d/resizezfs
-touch /mnt/firstboot
-touch /mnt/firstboot-reboot
 
 # /etc/fstab
 cat << EOF > /mnt/etc/fstab
@@ -233,6 +236,7 @@ cat << EOF > /mnt/etc/rc.conf
 firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
+hostname="fabrik" # change to your desired hostname
 ifconfig_DEFAULT="SYNCDHCP"
 clear_tmp_enable="YES"
 dumpdev="NO"
@@ -287,7 +291,7 @@ exec.clean;
 mount.devfs;
 allow.raw_sockets;
 securelevel=3;
-host.hostname="\$name.hostname"; # change to your desired hostname
+host.hostname="\$name.fabrik"; # change to your desired hostname
 path="/jails/\$name";
 
 base {
