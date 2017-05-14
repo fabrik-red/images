@@ -159,8 +159,6 @@ touch /mnt/firstboot-reboot
 sed 's/^X//' >/mnt/root/.cshrc << 'CSHRC'
 Xalias h  history 25
 Xalias j  jobs -l
-Xalias ls ls -GF
-Xalias l ls -lhaGF
 Xalias la ls -aF
 Xalias lf ls -FA
 Xalias ll ls -lAF
