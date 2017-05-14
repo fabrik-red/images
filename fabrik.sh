@@ -148,6 +148,63 @@ Xload_rc_config $name
 Xrun_rc_command "$1"
 FIRSTBOOT
 
+sed 's/^X//' >/mnt/root/.cshrc << 'CSHRC'
+Xalias h  history 25
+Xalias j  jobs -l
+Xalias ls ls -GF
+Xalias l ls -lhaGF
+Xalias la ls -aF
+Xalias lf ls -FA
+Xalias ll ls -lAF
+Xalias rm rm -i
+Xalias mv mv -i
+Xalias cp cp -i
+X
+X# A righteous umask
+Xumask 22
+X
+Xset path = (/sbin /bin /usr/sbin /usr/bin /usr/local/sbin /usr/local/bin $HOME/bin)
+X
+Xsetenv EDITOR vi
+Xsetenv PAGER less
+Xsetenv BLOCKSIZE  K
+Xsetenv CLICOLOR
+Xsetenv LSCOLORS gxfxcxdxbxegedabagacad
+X
+Xset COLOR1="%{\e[0;32m%}"
+Xset COLOR2="%{\e[0;33m%}"
+Xset COLOR3="%{\e[0;36m%}"
+Xset COLOR4="%{\e[0;0m%}"
+Xset COLOR5="%{\e[0;33m%}"
+X
+Xif ($?prompt) then
+X  # An interactive shell -- set some stuff up
+X  if ($uid == 0) then
+X    set COLOR3="%{\e[1;31m%}"
+X    set user = root
+X  endif
+X  set prompt="$COLOR2\[$COLOR3%n@%M$COLOR2\:$COLOR1%~$COLOR2\] [%p %d]\n$COLOR5>$COLOR4 "
+X  set promptchars = "%#"
+X
+X  set filec
+X  set history = 1000
+X  set savehist = (1000 merge)
+X  set autolist = ambiguous
+X  # Use history to aid expansion
+X  set autoexpand
+X  set autorehash
+X  set mail = (/var/mail/$USER)
+X  if ( $?tcsh ) then
+X    bindkey "^W" backward-delete-word
+X    bindkey -k up history-search-backward
+X    bindkey -k down history-search-forward
+X  endif
+X
+Xendif
+CSHRC
+
+cp -f /mnt/root/.cshrc /mnt/usr/home/devops/.cshrc
+
 chmod 0555 /mnt/usr/local/etc/rc.d/resizezfs
 touch /mnt/firstboot
 touch /mnt/firstboot-reboot
