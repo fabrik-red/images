@@ -67,8 +67,10 @@ zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
 zfs create -o mountpoint=/tmp -o exec=off -o setuid=off ${ZPOOL}/tmp
 zfs create -o mountpoint=/usr -o canmount=off ${ZPOOL}/usr
+zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/usr/doc
 zfs create ${ZPOOL}/usr/home
 zfs create ${ZPOOL}/usr/obj
+zfs create ${ZPOOL}/usr/local
 zfs create -o setuid=off -o compression=lz4 ${ZPOOL}/usr/ports
 zfs create -o setuid=off -o compression=off ${ZPOOL}/usr/ports/distfiles
 zfs create -o setuid=off -o compression=off ${ZPOOL}/usr/ports/packages
@@ -76,9 +78,13 @@ zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/usr/src
 zfs create -o mountpoint=/var -o canmount=off ${ZPOOL}/var
 zfs create -o exec=off -o setuid=off ${ZPOOL}/var/audit
 zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/var/crash
+zfs create ${ZPOOL}/var/db
+zfs create -o setuid=off -o compression=lz4 ${ZPOOL}/var/db/pkg
 zfs create -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/var/log
 zfs create -o exec=off -o setuid=off -o readonly=on ${ZPOOL}/var/empty
-zfs create -o atime=on -o exec=off -o setuid=off -o compression=lz4 ${ZPOOL}/var/mail
+zfs create -o atime=on -o exec=off -o setuid=off -o compression=gzip ${ZPOOL}/var/mail
+zfs create ${ZPOOL}/var/spool
+zfs create -o exec=off -o setuid=off -o compression=gzip ${ZPOOL}/var/spool/clientmqueue
 zfs create -o setuid=off -o compression=lz4 ${ZPOOL}/var/tmp
 zfs create ${ZPOOL}/var/ports
 zfs create -o mountpoint=/jails ${ZPOOL}/jails
@@ -164,6 +170,7 @@ EOF
 cat << EOF > /mnt/etc/rc.conf
 resizezfs_enable="YES"
 zfs_enable="YES"
+gateway_enable="YES"
 ifconfig_DEFAULT="SYNCDHCP"
 clear_tmp_enable="YES"
 dumpdev="NO"
@@ -173,7 +180,7 @@ sendmail_enable="NONE"
 sshd_enable="YES"
 syslogd_flags="-ssC"
 cloned_interfaces="lo1"
-ipv4_addrs_lo1="172.16.13.1-6/29"
+ifconfig_lo1_aliases="inet 172.16.13.1/24 inet 172.16.13.2-5/32"
 #-----------------------------------------------------------------------
 # pf
 #-----------------------------------------------------------------------
@@ -190,7 +197,8 @@ EOF
 
 # /etc/pf.conf
 cat << EOF > /mnt/etc/pf.conf
-ext_if = "vnet0"
+ext_if = "vtnet0"
+set skip on lo
 scrub in all
 nat on \$ext_if from lo1:network to any -> (\$ext_if)
 pass all
@@ -221,7 +229,7 @@ path="/jails/\$name";
 
 base {
     jid = 10;
-    ip4.addr = vtnet0|172.16.13.2/29;
+    ip4.addr = vtnet0|172.16.13.2/24;
 }
 EOF
 
