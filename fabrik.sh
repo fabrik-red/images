@@ -138,8 +138,8 @@ X       DISK=$(gpart list | awk '/Geom name/{split($0,a,":"); print a[2]}')
 X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,":"); print arr[2]; flag=0}')
 X       gpart recover ${DISK}
 X       gpart resize -i 3 ${DISK}
-X       zpool online -e zroot ${GUID}
-X       zfs set readonly=off zroot/ROOT/default
+X       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
+X       [ -w /COPYRIGHT ] && echo "zfs read/write OK" || zfs set readonly=off zroot/ROOT/default
 X}
 X
 Xload_rc_config $name
@@ -161,8 +161,10 @@ beastie_disable="YES"
 console="comconsole,vidconsole"
 hw.broken_txfifo="1"
 hw.memtest.test="0"
+hw.vtnet.mq_disable="1"
 kern.geom.label.disk_ident.enable="0"
 kern.geom.label.gptid.enable="0"
+kern.timecounter.hardware=ACPI-safe
 zfs_load="YES"
 EOF
 
@@ -206,14 +208,15 @@ EOF
 
 # /etc/sysctl.conf
 cat << EOF > /mnt/etc/sysctl.conf
-debug.trace_on_panic=1
 debug.debugger_on_panic=0
+debug.trace_on_panic=1
 kern.panic_reboot_wait_time=0
-security.bsd.see_other_uids=0
+net.inet.tcp.tso=0
 security.bsd.see_other_gids=0
-security.bsd.unprivileged_read_msgbuf=0
-security.bsd.unprivileged_proc_debug=0
+security.bsd.see_other_uids=0
 security.bsd.stack_guard_page=1
+security.bsd.unprivileged_proc_debug=0
+security.bsd.unprivileged_read_msgbuf=0
 EOF
 
 # /etc/jail.conf
@@ -224,12 +227,12 @@ exec.clean;
 mount.devfs;
 allow.raw_sockets;
 securelevel=3;
-host.hostname="\$name.hostname";
+host.hostname="\$name.hostname"; # change to your desired hostname
 path="/jails/\$name";
 
 base {
     jid = 10;
-    ip4.addr = vtnet0|172.16.13.2/24;
+    ip4.addr = 172.16.13.2;
 }
 EOF
 
