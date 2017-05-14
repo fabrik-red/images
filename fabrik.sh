@@ -310,8 +310,8 @@ EOF
 
 # jail /etc/resolv.conf
 cat << EOF > /mnt/jails/base/etc/resolv.conf
+nameserver 84.200.70.40
 nameserver 4.2.2.2
-nameserver 8.8.4.4
 nameserver 2001:4860:4860::8888
 nameserver 2001:1608:10:25::1c04:b12f
 EOF
