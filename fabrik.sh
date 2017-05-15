@@ -177,10 +177,9 @@ XSSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/ssh-key
 X
 Xgce_firstboot_run()
 X{
-X	# Figure out where the SSH public key needs to go.
 X	eval SSHKEYFILE="~${user}/.ssh/authorized_keys"
 X
-X	echo "Fetching SSH public key"
+X	echo "Fetching SSH public key GCE"
 X	mkdir -p `dirname ${SSHKEYFILE}`
 X	chmod 700 `dirname ${SSHKEYFILE}`
 X	chown ${user} `dirname ${SSHKEYFILE}`
@@ -225,10 +224,9 @@ XSSHKEYURL="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
 X
 Xaws_firstboot_run()
 X{
-X	# Figure out where the SSH public key needs to go.
 X	eval SSHKEYFILE="~${user}/.ssh/authorized_keys"
 X
-X	echo "Fetching SSH public key"
+X	echo "Fetching SSH public key AWS"
 X	mkdir -p `dirname ${SSHKEYFILE}`
 X	chmod 700 `dirname ${SSHKEYFILE}`
 X	chown ${user} `dirname ${SSHKEYFILE}`
