@@ -165,7 +165,7 @@ X# PROVIDE: gce_firstboot
 X# REQUIRE: NETWORKING
 X# BEFORE: LOGIN
 X
-X: ${fetchkey_user=__user__}
+X: ${user=__user__}
 X
 X. /etc/rc.subr
 X
@@ -179,18 +179,18 @@ X
 Xgce_firstboot_run()
 X{
 X	# Figure out where the SSH public key needs to go.
-X	eval SSHKEYFILE="~${fetchkey_user}/.ssh/authorized_keys"
+X	eval SSHKEYFILE="~${user}/.ssh/authorized_keys"
 X
 X	echo "Fetching SSH public key"
 X	mkdir -p `dirname ${SSHKEYFILE}`
 X	chmod 700 `dirname ${SSHKEYFILE}`
-X	chown ${firstboot_user} `dirname ${SSHKEYFILE}`
+X	chown ${user} `dirname ${SSHKEYFILE}`
 X	/usr/local/bin/curl --connect-timeout 5 -s -H "Metadata-Flavor: Google" -f ${SSHKEYURL} -o ${SSHKEYFILE}.gce
 X	if [ -f ${SSHKEYFILE}.gce ]; then
 X		touch ${SSHKEYFILE}
 X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.gce > ${SSHKEYFILE}.tmp
 X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
-X		chown ${gce_firstboot_user} ${SSHKEYFILE}
+X		chown ${user} ${SSHKEYFILE}
 X		rm ${SSHKEYFILE}.gce
 X	else
 X		echo "Fetching SSH public key failed!"
@@ -200,7 +200,7 @@ X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 GCE_FIRSTBOOT
-sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/gce_fetchkey
+sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/gce_firstboot
 chmod 0555 /mnt/usr/local/etc/rc.d/gce_firstboot
 
 # ----------------------------------------------------------------------------
@@ -214,7 +214,7 @@ X# PROVIDE: aws_firstboot
 X# REQUIRE: NETWORKING
 X# BEFORE: LOGIN
 X
-X: ${fetchkey_user=__user__}
+X: ${user=__user__}
 X
 X. /etc/rc.subr
 X
@@ -228,19 +228,19 @@ X
 Xaws_firstboot_run()
 X{
 X	# Figure out where the SSH public key needs to go.
-X	eval SSHKEYFILE="~${fetchkey_user}/.ssh/authorized_keys"
+X	eval SSHKEYFILE="~${user}/.ssh/authorized_keys"
 X
 X	echo "Fetching SSH public key"
 X	mkdir -p `dirname ${SSHKEYFILE}`
 X	chmod 700 `dirname ${SSHKEYFILE}`
-X	chown ${fetchkey_user} `dirname ${SSHKEYFILE}`
+X	chown ${user} `dirname ${SSHKEYFILE}`
 X	ftp -o ${SSHKEYFILE}.ec2 -a ${SSHKEYURL} >/dev/null
 X	if [ -f ${SSHKEYFILE}.ec2 ]; then
 X		touch ${SSHKEYFILE}
 X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.ec2		\
 X		    > ${SSHKEYFILE}.tmp
 X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
-X		chown ${ec2_fetchkey_user} ${SSHKEYFILE}
+X		chown ${user} ${SSHKEYFILE}
 X		rm ${SSHKEYFILE}.ec2
 X	else
 X		echo "Fetching SSH public key failed!"
@@ -250,7 +250,7 @@ X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 AWS_FIRSTBOOT
-sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/aws_fetchkey
+sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/aws_firstboot
 chmod 0555 /mnt/usr/local/etc/rc.d/aws_firstboot
 
 # ----------------------------------------------------------------------------
