@@ -1,6 +1,5 @@
 #!/bin/sh
 set -e
-set -v
 
 # ----------------------------------------------------------------------------
 # fabrik.sh - All in one script to create the disk.raw image
@@ -118,14 +117,17 @@ yes | chroot /mnt /usr/bin/env ASSUME_ALWAYS_YES=yes pkg install -qy curl > /dev
 chroot /mnt /usr/bin/env ASSUME_ALWAYS_YES=yes pkg clean -qya > /dev/null 2>&1
 rm -rf /mnt/var/db/pkg/repo*
 
-write "Creating firstboot script to be run only once at firstboot"
+write "Creating firstboot scripts"
 chroot /mnt mkdir -p /usr/local/etc/rc.d
+touch /mnt/firstboot
+touch /mnt/firstboot-reboot
+
+# firstboot
 sed 's/^X//' >/mnt/usr/local/etc/rc.d/firstboot << 'FIRSTBOOT'
 X#!/bin/sh
 X
 X# KEYWORD: firstboot
 X# PROVIDE: firstboot
-X# REQUIRE: NETWORKING
 X# BEFORE: LOGIN
 X
 X. /etc/rc.subr
@@ -150,10 +152,106 @@ X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 FIRSTBOOT
-
 chmod 0555 /mnt/usr/local/etc/rc.d/firstboot
-touch /mnt/firstboot
-touch /mnt/firstboot-reboot
+
+# ----------------------------------------------------------------------------
+# GCE - firstboot
+# ----------------------------------------------------------------------------
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/gce_firstboot << 'GCE_FIRSTBOOT'
+X#!/bin/sh
+X
+X# KEYWORD: firstboot
+X# PROVIDE: gce_firstboot
+X# REQUIRE: NETWORKING
+X# BEFORE: LOGIN
+X
+X: ${fetchkey_user=__user__}
+X
+X. /etc/rc.subr
+X
+Xname="gce_firstboot"
+Xrcvar=gce_firstboot_enable
+Xstart_cmd="gce_firstboot_run"
+Xstop_cmd=":"
+X
+XSSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/ssh-keys"
+X
+Xgce_firstboot_run()
+X{
+X	# Figure out where the SSH public key needs to go.
+X	eval SSHKEYFILE="~${fetchkey_user}/.ssh/authorized_keys"
+X
+X	echo "Fetching SSH public key"
+X	mkdir -p `dirname ${SSHKEYFILE}`
+X	chmod 700 `dirname ${SSHKEYFILE}`
+X	chown ${firstboot_user} `dirname ${SSHKEYFILE}`
+X	/usr/local/bin/curl --connect-timeout 5 -s -H "Metadata-Flavor: Google" -f ${SSHKEYURL} -o ${SSHKEYFILE}.gce
+X	if [ -f ${SSHKEYFILE}.gce ]; then
+X		touch ${SSHKEYFILE}
+X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.gce > ${SSHKEYFILE}.tmp
+X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
+X		chown ${gce_firstboot_user} ${SSHKEYFILE}
+X		rm ${SSHKEYFILE}.gce
+X	else
+X		echo "Fetching SSH public key failed!"
+X	fi
+X}
+X
+Xload_rc_config $name
+Xrun_rc_command "$1"
+GCE_FIRSTBOOT
+sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/gce_fetchkey
+chmod 0555 /mnt/usr/local/etc/rc.d/gce_firstboot
+
+# ----------------------------------------------------------------------------
+# AWS - firstboot
+# ----------------------------------------------------------------------------
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/aws_firstboot << 'AWS_FIRSTBOOT'
+X#!/bin/sh
+X
+X# KEYWORD: firstboot
+X# PROVIDE: aws_firstboot
+X# REQUIRE: NETWORKING
+X# BEFORE: LOGIN
+X
+X: ${fetchkey_user=__user__}
+X
+X. /etc/rc.subr
+X
+Xname="aws_firstboot"
+Xrcvar=aws_firstboot_enable
+Xstart_cmd="aws_firstboot_run"
+Xstop_cmd=":"
+X
+XSSHKEYURL="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
+X
+Xaws_firstboot_run()
+X{
+X	# Figure out where the SSH public key needs to go.
+X	eval SSHKEYFILE="~${fetchkey_user}/.ssh/authorized_keys"
+X
+X	echo "Fetching SSH public key"
+X	mkdir -p `dirname ${SSHKEYFILE}`
+X	chmod 700 `dirname ${SSHKEYFILE}`
+X	chown ${fetchkey_user} `dirname ${SSHKEYFILE}`
+X	ftp -o ${SSHKEYFILE}.ec2 -a ${SSHKEYURL} >/dev/null
+X	if [ -f ${SSHKEYFILE}.ec2 ]; then
+X		touch ${SSHKEYFILE}
+X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.ec2		\
+X		    > ${SSHKEYFILE}.tmp
+X		mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
+X		chown ${ec2_fetchkey_user} ${SSHKEYFILE}
+X		rm ${SSHKEYFILE}.ec2
+X	else
+X		echo "Fetching SSH public key failed!"
+X	fi
+X}
+X
+Xload_rc_config $name
+Xrun_rc_command "$1"
+AWS_FIRSTBOOT
+sed -i '' -e "s:__user__:${USER}:g" /mnt/usr/local/etc/rc.d/aws_fetchkey
+chmod 0555 /mnt/usr/local/etc/rc.d/aws_firstboot
 
 # ----------------------------------------------------------------------------
 # .cshrc
@@ -234,6 +332,8 @@ EOF
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
 firstboot_enable="YES"
+gce_firstboot_enable="YES"
+aws_firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 hostname="fabrik" # change to your desired hostname
