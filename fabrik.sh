@@ -41,7 +41,9 @@ env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildkernel KERNCONF=FABRIK
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
-write "Creating disk.raw"
+# ----------------------------------------------------------------------------
+# Creating disk.raw
+# ----------------------------------------------------------------------------
 cd /fabrik
 RAW=disk.raw
 VMSIZE=2g
@@ -60,6 +62,8 @@ gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
 
 sysctl vfs.zfs.min_auto_ashift=12
 
+set -v
+write "Creating zpool"
 zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
 zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
@@ -279,7 +283,6 @@ Xset COLOR4="%{\e[0;0m%}"
 Xset COLOR5="%{\e[0;33m%}"
 X
 Xif ($?prompt) then
-X  # An interactive shell -- set some stuff up
 X  if ($uid == 0) then
 X    set COLOR3="%{\e[1;31m%}"
 X    set user = root
@@ -291,7 +294,6 @@ X  set filec
 X  set history = 1000
 X  set savehist = (1000 merge)
 X  set autolist = ambiguous
-X  # Use history to aid expansion
 X  set autoexpand
 X  set autorehash
 X  set mail = (/var/mail/$USER)
@@ -332,7 +334,7 @@ aws_firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 hostname="fabrik" # change to your desired hostname
-ifconfig_DEFAULT="SYNCDHCP mtu 1460"
+ifconfig_DEFAULT="SYNCDHCP mtu 1460" # change this to match your host
 clear_tmp_enable="YES"
 dumpdev="NO"
 ntpd_enable="YES"
