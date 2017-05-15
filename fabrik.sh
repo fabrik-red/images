@@ -122,22 +122,21 @@ chroot /mnt mkdir -p /usr/local/etc/rc.d
 touch /mnt/firstboot
 touch /mnt/firstboot-reboot
 
-# firstboot
-sed 's/^X//' >/mnt/usr/local/etc/rc.d/firstboot << 'FIRSTBOOT'
+# zfs_firstboot
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/zfs_firstboot << 'ZFSFIRSTBOOT'
 X#!/bin/sh
 X
 X# KEYWORD: firstboot
-X# PROVIDE: firstboot
+X# PROVIDE: zfs_firstboot
 X# BEFORE: LOGIN
 X
 X. /etc/rc.subr
 X
-Xname="firstboot"
+Xname=zfs_firstboot
 Xrcvar=firstboot_enable
 Xstart_cmd="${name}_run"
-Xstop_cmd=":"
 X
-Xfirstboot_run()
+Xzfs_firstboot_run()
 X{
 X       DISK=$(gpart list | awk '/Geom name/{split($0,a,": "); print a[2]}')
 X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,": "); print arr[2]; flag=0}')
@@ -151,8 +150,8 @@ X}
 X
 Xload_rc_config $name
 Xrun_rc_command "$1"
-FIRSTBOOT
-chmod 0555 /mnt/usr/local/etc/rc.d/firstboot
+ZFSFIRSTBOOT
+chmod 0555 /mnt/usr/local/etc/rc.d/zfs_firstboot
 
 # ----------------------------------------------------------------------------
 # GCE - firstboot
@@ -171,7 +170,7 @@ X. /etc/rc.subr
 X
 Xname=gce_firstboot
 Xrcvar=gce_firstboot_enable
-Xstart_cmd=gce_firstboot_run
+Xstart_cmd="${name}_run"
 X
 XSSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/ssh-keys"
 X
@@ -218,7 +217,7 @@ X. /etc/rc.subr
 X
 Xname=aws_firstboot
 Xrcvar=aws_firstboot_enable
-Xstart_cmd=aws_firstboot_run
+Xstart_cmd="${name}_run"
 X
 XSSHKEYURL="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
 X
@@ -327,7 +326,7 @@ EOF
 
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
-firstboot_enable="YES"
+zfs_firstboot_enable="YES"
 gce_firstboot_enable="YES"
 aws_firstboot_enable="YES"
 zfs_enable="YES"
