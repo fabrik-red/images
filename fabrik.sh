@@ -337,7 +337,7 @@ aws_firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 hostname="fabrik" # change to your desired hostname
-ifconfig_DEFAULT="SYNCDHCP"
+ifconfig_DEFAULT="SYNCDHCP mtu 1460"
 clear_tmp_enable="YES"
 dumpdev="NO"
 ntpd_enable="YES"
@@ -427,6 +427,4 @@ rm -rf /mnt/*
 END=$(date +%s)
 DIFF=$(echo "$END - $START" | bc)
 
-echo ------------------------------
-echo "build in $DIFF seconds."
-echo ------------------------------
+write "Done! build in $DIFF seconds."
