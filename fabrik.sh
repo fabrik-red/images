@@ -147,15 +147,38 @@ X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0
 X       gpart recover ${DISK}
 X       gpart resize -i 3 ${DISK}
 X       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
-X
-X       NIC=$(route get default | awk '/interface:/{split($0,a,": "); print a[2]}')
-X       sed -i '' -e "s:vtnet0:${NIC}:g" /etc/pf.conf && sysrc jail_enable="YES"
 X}
 X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 ZFSFIRSTBOOT
 chmod 0555 /mnt/usr/local/etc/rc.d/zfs_firstboot
+
+# pf_firstboot
+sed 's/^X//' >/mnt/usr/local/etc/rc.d/pf_firstboot << 'PFFIRSTBOOT'
+X#!/bin/sh
+X
+X# KEYWORD: firstboot
+X# PROVIDE: pf_firstboot
+X# REQUIRE: NETWORKING
+X# BEFORE: LOGIN
+X
+X. /etc/rc.subr
+X
+Xname=pf_firstboot
+Xrcvar=pf_firstboot_enable
+Xstart_cmd="${name}_run"
+X
+Xpf_firstboot_run()
+X{
+X       NIC=$(route get default | awk '/interface:/{split($0,a,": "); print a[2]}')
+X       sed -i '' -e "s:vtnet0:${NIC}:g" /etc/pf.conf && sysrc jail_enable="YES" && sysrc pf_enable="YES"
+X}
+X
+Xload_rc_config $name
+Xrun_rc_command "$1"
+PFFIRSTBOOT
+chmod 0555 /mnt/usr/local/etc/rc.d/pf_firstboot
 
 # ----------------------------------------------------------------------------
 # GCE - firstboot
@@ -328,9 +351,10 @@ EOF
 
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
-zfs_firstboot_enable="YES"
-gce_firstboot_enable="YES"
 aws_firstboot_enable="YES"
+gce_firstboot_enable="YES"
+pf_firstboot_enable="YES"
+zfs_firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 hostname="fabrik" # change to your desired hostname
@@ -347,7 +371,7 @@ ifconfig_lo1_aliases="inet 172.16.13.1/24 inet 172.16.13.2-5/32"
 #-----------------------------------------------------------------------
 # pf
 #-----------------------------------------------------------------------
-pf_enable="YES"
+pf_enable="NO"
 pf_rules="/etc/pf.conf"
 pflog_enable="YES"
 pflog_logfile="/var/log/pflog"
