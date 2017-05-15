@@ -1,4 +1,7 @@
-#!/bin/sh -ex
+#!/bin/sh
+set -e
+set -v
+
 # ----------------------------------------------------------------------------
 # fabrik.sh - All in one script to create the disk.raw image
 # ----------------------------------------------------------------------------
@@ -13,42 +16,38 @@ ZPOOL=zroot
 # ----------------------------------------------------------------------------
 START=$(date +%s)
 
-# ----------------------------------------------------------------------------
-# update sources
-# ----------------------------------------------------------------------------
+write() {
+    echo -e '\e[0;32m'
+    echo \#----------------------------------------------------------------------------
+    echo \# $1
+    echo -e \#----------------------------------------------------------------------------'\e[0m'
+}
+
+write "Checking out and updating sources FreeBSD: ${FREEBSD_VERSION}"
 svnlite co svn://svn.freebsd.org/base/stable/${FREEBSD_VERSION} /usr/src
 
-# ----------------------------------------------------------------------------
-# fetch *.conf
-# ----------------------------------------------------------------------------
+write "Fetching src.conf, src-jail.conf, make.conf, fabrik.kernel"
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src.conf -o /etc/fabrik-src.conf
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/make.conf -o /etc/fabrik-make.conf
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/fabrik.kernel -o /usr/src/sys/amd64/conf/FABRIK
 
-# ----------------------------------------------------------------------------
-# create fabrik dir
-# ----------------------------------------------------------------------------
+write "Creating /fabrik dir"
 mkdir -p /fabrik/host
 mkdir -p /fabrik/jail
 
-# ----------------------------------------------------------------------------
-# build world, kernel and jail world
-# ----------------------------------------------------------------------------
+write "building world, kernel and jail world"
 cd /usr/src
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildkernel KERNCONF=FABRIK
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
-# ----------------------------------------------------------------------------
-# Create disk.raw FreeBSD ZFS root
-# ----------------------------------------------------------------------------
+write "Creating disk.raw"
 cd /fabrik
 RAW=disk.raw
 VMSIZE=2g
 WRKDIR=/tmp
 
-# ----------------------------------------------------------------------------
 zpool list
 rm -f ${RAW}
 truncate -s ${VMSIZE} ${RAW}
@@ -93,6 +92,7 @@ zfs create -o exec=off -o setuid=off ${ZPOOL}/jails/base/tmp
 zfs set quota=10G ${ZPOOL}/jails/base
 zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
 
+write "Installing world, kernel and jail world"
 cd /usr/src;
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${WRKDIR}/host-installworld.log && \
 env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/mnt installkernel KERNCONF=FABRIK 2>&1 | tee ${WRKDIR}/host-installkernel.log && \
@@ -104,19 +104,21 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/et
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
 chroot /mnt /etc/rc.d/ldconfig forcestart
+umount /mnt/dev
 
-# ----------------------------------------------------------------------------
-# create user and set password
-# ----------------------------------------------------------------------------
+write "Creating user ${USER} with password ${PASSWORD}"
 chroot /mnt pw useradd ${USER} -m -G wheel -s /bin/csh -h 0 <<EOP
 ${PASSWORD}
 EOP
 
-umount /mnt/dev
+cp /etc/resolv.conf /mnt/etc/resolv.conf
 
-# ----------------------------------------------------------------------------
-# firstboot script to be run only once at firstboot
-# ----------------------------------------------------------------------------
+write "Installing curl"
+yes | chroot /mnt /usr/bin/env ASSUME_ALWAYS_YES=yes pkg install -qy curl > /dev/null 2>&1
+chroot /mnt /usr/bin/env ASSUME_ALWAYS_YES=yes pkg clean -qya > /dev/null 2>&1
+rm -rf /mnt/var/db/pkg/repo*
+
+write "Creating firstboot script to be run only once at firstboot"
 chroot /mnt mkdir -p /usr/local/etc/rc.d
 sed 's/^X//' >/mnt/usr/local/etc/rc.d/firstboot << 'FIRSTBOOT'
 X#!/bin/sh
