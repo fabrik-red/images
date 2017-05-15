@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# KEYWORD: firstboot
+# PROVIDE: aws_firstboot
+# REQUIRE: NETWORKING
+# BEFORE: LOGIN
+
+: ${user=devops}
+
+. /etc/rc.subr
+
+name=aws_firstboot
+rcvar=aws_firstboot_enable
+start_cmd="${name}_run"
+
+SSHKEYURL="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
+
+aws_firstboot_run()
+{
+        eval SSHKEYFILE="~${user}/.ssh/authorized_keys"
+
+        echo "Fetching SSH public key AWS"
+        mkdir -p `dirname ${SSHKEYFILE}`
+        chmod 700 `dirname ${SSHKEYFILE}`
+        chown ${user} `dirname ${SSHKEYFILE}`
+        ftp -q 5 -o ${SSHKEYFILE}.ec2 -a ${SSHKEYURL} >/dev/null
+        if [ -f ${SSHKEYFILE}.ec2 ]; then
+                touch ${SSHKEYFILE}
+                sort -u ${SSHKEYFILE} ${SSHKEYFILE}.ec2         \
+                    > ${SSHKEYFILE}.tmp
+                mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
+                chown ${user} ${SSHKEYFILE}
+                rm ${SSHKEYFILE}.ec2
+        else
+                echo "Fetching SSH public key failed!"
+        fi
+}
+
+load_rc_config $name
+run_rc_command "$1"
