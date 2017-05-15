@@ -169,10 +169,9 @@ X: ${user=__user__}
 X
 X. /etc/rc.subr
 X
-Xname="gce_firstboot"
+Xname=gce_firstboot
 Xrcvar=gce_firstboot_enable
-Xstart_cmd="gce_firstboot_run"
-Xstop_cmd=":"
+Xstart_cmd=gce_firstboot_run
 X
 XSSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/ssh-keys"
 X
@@ -218,10 +217,9 @@ X: ${user=__user__}
 X
 X. /etc/rc.subr
 X
-Xname="aws_firstboot"
+Xname=aws_firstboot
 Xrcvar=aws_firstboot_enable
-Xstart_cmd="aws_firstboot_run"
-Xstop_cmd=":"
+Xstart_cmd=aws_firstboot_run
 X
 XSSHKEYURL="http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key"
 X
@@ -234,7 +232,7 @@ X	echo "Fetching SSH public key"
 X	mkdir -p `dirname ${SSHKEYFILE}`
 X	chmod 700 `dirname ${SSHKEYFILE}`
 X	chown ${user} `dirname ${SSHKEYFILE}`
-X	ftp -o ${SSHKEYFILE}.ec2 -a ${SSHKEYURL} >/dev/null
+X	ftp -q 5 -o ${SSHKEYFILE}.ec2 -a ${SSHKEYURL} >/dev/null
 X	if [ -f ${SSHKEYFILE}.ec2 ]; then
 X		touch ${SSHKEYFILE}
 X		sort -u ${SSHKEYFILE} ${SSHKEYFILE}.ec2		\
