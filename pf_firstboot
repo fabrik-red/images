@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# KEYWORD: firstboot
+# PROVIDE: pf_firstboot
+# REQUIRE: NETWORKING
+# BEFORE: LOGIN
+
+. /etc/rc.subr
+
+name=pf_firstboot
+rcvar=pf_firstboot_enable
+start_cmd="${name}_run"
+
+pf_firstboot_run()
+{
+       NIC=$(route get default | awk '/interface:/{split($0,a,": "); print a[2]}')
+       sed -i '' -e "s:vtnet0:${NIC}:g" /etc/pf.conf && sysrc jail_enable="YES" && sysrc pf_enable="YES"
+}
+
+load_rc_config $name
+run_rc_command "$1"

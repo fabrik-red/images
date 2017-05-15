@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# KEYWORD: firstboot
+# PROVIDE: zfs_firstboot
+# BEFORE: LOGIN
+
+. /etc/rc.subr
+
+name=zfs_firstboot
+rcvar=zfs_firstboot_enable
+start_cmd="${name}_run"
+
+zfs_firstboot_run()
+{
+       DISK=$(gpart list | awk '/Geom name/{split($0,a,": "); print a[2]}')
+       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,": "); print arr[2]; flag=0}')
+       gpart recover ${DISK}
+       gpart resize -i 3 ${DISK}
+       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
+}
+
+load_rc_config $name
+run_rc_command "$1"
