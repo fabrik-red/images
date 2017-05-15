@@ -62,8 +62,8 @@ gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
 
 sysctl vfs.zfs.min_auto_ashift=12
 
-set -v
 write "Creating zpool"
+set -v
 zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
 zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
@@ -137,7 +137,7 @@ X
 X. /etc/rc.subr
 X
 Xname=zfs_firstboot
-Xrcvar=firstboot_enable
+Xrcvar=zfs_firstboot_enable
 Xstart_cmd="${name}_run"
 X
 Xzfs_firstboot_run()
