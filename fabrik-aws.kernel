@@ -1,14 +1,12 @@
 # ----------------------------------------------------------------------------
-# FABRIK: all in one working in AWS & GCE and VPC's that offer VNC
-# - xen & vmx (KVM/VMWARE)
-# - Intel em0, igb, ixgbe
-# - USB
-# - pf
-# - CARP
-# - IPSEC
+# FABRIK: for AWS only (xen)
+# - no USB
+# - no CARP
+# - no IPSEC
+# - no pf
 # ----------------------------------------------------------------------------
 cpu		HAMMER
-ident   	FABRIK
+ident   	FABRIKAWS
 
 options 	SCHED_ULE		# ULE scheduler
 options 	PREEMPTION		# Enable kernel thread preemption
@@ -112,11 +110,6 @@ options		TERMINAL_KERN_ATTR=(FG_YELLOW|BG_BLACK)
 # Serial (COM) ports
 device		uart			# Generic UART driver
 
-# PCI Ethernet NICs.
-device		em			# Intel PRO/1000 Gigabit Ethernet Family
-device		igb			# Intel PRO/1000 PCIE Server Gigabit Family
-device		ix			# Intel PRO/10GbE PCIE Ethernet Family
-
 # Pseudo devices.
 device		loop			# Network loopback
 device		random			# Entropy device
@@ -134,15 +127,6 @@ device		firmware		# firmware assist module
 # Note that 'bpf' is required for DHCP.
 device		bpf			# Berkeley packet filter
 
-# USB support
-device          uhci                    # UHCI PCI->USB interface
-device          ohci                    # OHCI PCI->USB interface
-device          ehci                    # EHCI PCI->USB interface (USB 2.0)
-device          xhci                    # XHCI PCI->USB interface (USB 3.0)
-device          usb                     # USB Bus (required)
-device          ukbd                    # Keyboard
-device          umass                   # Disks/Mass storage - Requires scbus and da
-
 # VirtIO support
 device		virtio			# Generic VirtIO bus (required)
 device		virtio_pci		# VirtIO PCI Interface
@@ -152,9 +136,6 @@ device		virtio_scsi		# VirtIO SCSI device
 device		virtio_balloon		# VirtIO Memory Balloon device
 device		virtio_random		# VirtIO Entropy device
 device		virtio_console		# VirtIO Console device
-
-# HyperV drivers and enchancement support
-device		hyperv			# HyperV drivers
 
 # Xen HVM Guest Optimizations
 # NOTE: XENHVM depends on xenpci.  They must be added or removed together.
@@ -171,44 +152,3 @@ device    	snp
 
 # zpty
 device 		pty
-
-# vmware
-device		vmx
-
-# pf
-device pf
-device pflog
-device pfsync
-
-# pf's QoS - ALTQ
-options ALTQ
-options ALTQ_CBQ        # Class Bases Queuing (CBQ)
-options ALTQ_RED        # Random Early Detection (RED)
-options ALTQ_RIO        # RED In/Out
-options ALTQ_HFSC       # Hierarchical Packet Scheduler (HFSC)
-options ALTQ_PRIQ       # Priority Queuing (PRIQ)
-options ALTQ_NOPCC      # Required for SMP build
-
-# This option is used for by firewall not to decrement time to live (TTL) value.
-# This is used to hide presence of your firewall for outside world
-# (your firewall will not be seen with traceroute command).
-options IPSTEALTH
-
-# VPN
-options   IPSEC
-options   IPSEC_DEBUG
-device    crypto
-device    aesni
-device    enc
-
-# routes setfib
-options ROUTETABLES=4
-
-# encapsulating network device
-device gre
-
-# Common Address Redundancy Protocol
-device carp
-
-# disk encryption
-options		GEOM_ELI
