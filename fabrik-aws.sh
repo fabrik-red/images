@@ -46,7 +46,7 @@ env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/
 # ----------------------------------------------------------------------------
 # Creating disk.raw
 # ----------------------------------------------------------------------------
-cd /fabrik
+cd ${WRKDIR}
 RAW=disk.raw
 VMSIZE=2g
 LOGDIR=${WRKDIR}/tmp

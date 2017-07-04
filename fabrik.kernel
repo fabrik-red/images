@@ -212,3 +212,5 @@ device carp
 
 # disk encryption
 options		GEOM_ELI
+
+# /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
