@@ -3,7 +3,6 @@
 # - no USB
 # - no CARP
 # - no IPSEC
-# - no pf
 # ----------------------------------------------------------------------------
 cpu		HAMMER
 ident		FABRIKAWS
@@ -121,5 +120,10 @@ device		snp
 
 # zpty
 device		pty
+
+# pf
+device pf
+device pflog
+device pfsync
 
 # /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
