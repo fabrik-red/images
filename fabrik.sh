@@ -353,7 +353,6 @@ EOF
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
 aws_firstboot_enable="YES"
-growfs_enable="YES"
 gce_firstboot_enable="YES"
 pf_firstboot_enable="YES"
 zfs_firstboot_enable="YES"

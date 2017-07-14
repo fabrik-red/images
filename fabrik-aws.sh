@@ -283,7 +283,6 @@ EOF
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
 aws_firstboot_enable="YES"
-growfs_enable="YES"
 zfs_enable="YES"
 zfs_firstboot_enable="YES"
 hostname="fabrik" # change to your desired hostname
