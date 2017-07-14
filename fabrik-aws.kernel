@@ -1,8 +1,9 @@
 # ----------------------------------------------------------------------------
 # FABRIK: for AWS only (xen)
-# - no USB
 # - no CARP
 # - no IPSEC
+# - no PF
+# - no USB
 # ----------------------------------------------------------------------------
 cpu		HAMMER
 ident		FABRIKAWS
@@ -72,6 +73,7 @@ device		pci
 
 # ATA controllers
 device		ahci			# AHCI-compatible SATA controllers
+device		ata			# Legacy ATA/SATA controllers
 options		ATA_STATIC_ID		# Static device numbering
 
 # ATA/SCSI peripherals
@@ -120,10 +122,5 @@ device		snp
 
 # zpty
 device		pty
-
-# pf
-device pf
-device pflog
-device pfsync
 
 # /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
