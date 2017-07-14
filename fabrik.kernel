@@ -197,7 +197,10 @@ options IPSTEALTH
 # VPN
 options   IPSEC
 options   IPSEC_DEBUG
+
+# crypto
 device    crypto
+device    cryptodev
 device    aesni
 device    enc
 

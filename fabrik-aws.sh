@@ -269,6 +269,7 @@ EOF
 cat << EOF > /mnt/boot/loader.conf
 autoboot_delay="-1"
 beastie_disable="YES"
+boot_multicons="YES"
 console="comconsole,vidconsole"
 hw.broken_txfifo="1"
 hw.memtest.test="0"
@@ -282,8 +283,9 @@ EOF
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
 aws_firstboot_enable="YES"
-zfs_firstboot_enable="YES"
+growfs_enable="YES"
 zfs_enable="YES"
+zfs_firstboot_enable="YES"
 hostname="fabrik" # change to your desired hostname
 ifconfig_DEFAULT="SYNCDHCP -tso"
 clear_tmp_enable="YES"

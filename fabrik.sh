@@ -339,6 +339,7 @@ EOF
 cat << EOF > /mnt/boot/loader.conf
 autoboot_delay="-1"
 beastie_disable="YES"
+boot_multicons="YES"
 console="comconsole,vidconsole"
 hw.broken_txfifo="1"
 hw.memtest.test="0"
@@ -352,6 +353,7 @@ EOF
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
 aws_firstboot_enable="YES"
+growfs_enable="YES"
 gce_firstboot_enable="YES"
 pf_firstboot_enable="YES"
 zfs_firstboot_enable="YES"

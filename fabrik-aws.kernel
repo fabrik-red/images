@@ -80,6 +80,10 @@ options		ATA_STATIC_ID		# Static device numbering
 device		scbus			# SCSI bus (required for ATA/SCSI)
 device		da			# Direct Access (disks)
 
+# NVM Express (NVMe) support
+device		nvme			# base NVMe driver
+device		nvd			# expose NVMe namespaces as disks, depends on nvme
+
 # atkbdc0 controls both the keyboard and the PS/2 mouse
 device		atkbdc			# AT keyboard controller
 device		atkbd			# AT keyboard
@@ -122,5 +126,11 @@ device		snp
 
 # zpty
 device		pty
+
+# crypto
+device		crypto
+device		cryptodev
+device		aesni
+device		enc
 
 # /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
