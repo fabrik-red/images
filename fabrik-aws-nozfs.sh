@@ -41,14 +41,14 @@ write "building world, kernel and jail world"
 cd /usr/src
 env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildkernel KERNCONF=${KERNEL}
-env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
+# env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 # ----------------------------------------------------------------------------
 # Creating disk.raw
 # ----------------------------------------------------------------------------
 cd ${WRKDIR}
 IMAGE=ec2
-VMSIZE=2g
+VMSIZE=1g
 SWAPSIZE=1G
 LOGDIR=${WRKDIR}/tmp
 mkdir -p ${LOGDIR}
@@ -61,18 +61,18 @@ mddev=$(mdconfig -a -t vnode -f ${IMAGE})
 newfs /dev/${mddev}
 mount /dev/${mddev} /mnt
 
-write "Installing world, kernel and jail world"
-cd /usr/src;
-env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${LOGDIR}/host-installworld.log && \
-env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt installkernel KERNCONF=${KERNEL} 2>&1 | tee ${LOGDIR}/host-installkernel.log && \
-env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt distribution 2>&1 | tee ${LOGDIR}/host-distribution.log
+#write "Installing world, kernel and jail world"
+#cd /usr/src;
+#env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${LOGDIR}/host-installworld.log && \
+#env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt installkernel KERNCONF=${KERNEL} 2>&1 | tee ${LOGDIR}/host-installkernel.log && \
+#env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt distribution 2>&1 | tee ${LOGDIR}/host-distribution.log
 
 # create jails dir
 mkdir -p /mnt/jails/base
 
 # installworld & distribution for jail
-env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${LOGDIR}/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt/jails/base distribution 2>&1 | tee ${LOGDIR}/jail-distribution.log
+#env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${LOGDIR}/jail-installworld.log && \
+#env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt/jails/base distribution 2>&1 | tee ${LOGDIR}/jail-distribution.log
 
 mkdir -p /mnt/dev
 mount -t devfs devfs /mnt/dev
