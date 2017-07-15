@@ -311,15 +311,15 @@ mkimg -s gpt -f raw \
     -b ${BOOTFILES}/i386/pmbr/pmbr \
     -p freebsd-boot/bootfs:=${BOOTFILES}/i386/gptboot/gptboot \
     -p freebsd-swap/swapfs::${SWAPSIZE} \
-    -p freebsd-ufs/rootfs:=${IMAGE} \
-    -o ${IMAGE}.raw
+    -p freebsd-ufs/rootfs:=${WRKDIR}/${IMAGE} \
+    -o ${WRKDIR}/${IMAGE}.raw
 
 mkimg -s gpt -f vmdk \
     -b ${BOOTFILES}/i386/pmbr/pmbr \
     -p freebsd-boot/bootfs:=${BOOTFILES}/i386/gptboot/gptboot \
     -p freebsd-swap/swapfs::${SWAPSIZE} \
-    -p freebsd-ufs/rootfs:=${RAW} \
-    -o ${IMAGE}.vmdk
+    -p freebsd-ufs/rootfs:=${WRKDIR}/${IMAGE} \
+    -o ${WRKDIR}/${IMAGE}.vmdk
 
 END=$(date +%s)
 DIFF=$(echo "$END - $START" | bc)
