@@ -54,10 +54,12 @@ LOGDIR=${WRKDIR}/tmp
 mkdir -p ${LOGDIR}
 
 rm -f ${IMAGE}
+rm -f ${IMAGE}.raw
+rm -f ${IMAGE}.vmdk
 truncate -s ${VMSIZE} ${IMAGE}
 mddev=$(mdconfig -a -t vnode -f ${IMAGE})
 newfs /dev/${mddev}
-mount /dev${mddev} /mnt
+mount /dev/${mddev} /mnt
 
 write "Installing world, kernel and jail world"
 cd /usr/src;
