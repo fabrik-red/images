@@ -94,6 +94,7 @@ zfs create ${ZPOOL}/jails/base
 zfs create -o exec=off -o setuid=off ${ZPOOL}/jails/base/tmp
 zfs set quota=10G ${ZPOOL}/jails/base
 zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
+zpool set cachefile=/etc/zfs/zpool.cache ${ZPOOL}
 
 write "Installing world, kernel and jail world"
 cd /usr/src;
