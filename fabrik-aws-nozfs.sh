@@ -48,7 +48,7 @@ env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/
 # ----------------------------------------------------------------------------
 cd ${WRKDIR}
 IMAGE=ec2
-VMSIZE=1g
+VMSIZE=2g
 SWAPSIZE=1G
 LOGDIR=${WRKDIR}/tmp
 mkdir -p ${LOGDIR}
