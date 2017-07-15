@@ -9,7 +9,7 @@ FREEBSD_VERSION=11
 USER=devops
 PASSWORD=fabrik
 ZPOOL=zroot
-WRKDIR=/fabrik/aws
+WRKDIR=/fabrik/aws-nozfs
 KERNEL=FABRIKAWS
 
 # ----------------------------------------------------------------------------
