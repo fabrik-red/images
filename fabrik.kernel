@@ -41,7 +41,7 @@ options 	COMPAT_FREEBSD6		# Compatible with FreeBSD6
 options 	COMPAT_FREEBSD7		# Compatible with FreeBSD7
 options 	COMPAT_FREEBSD9		# Compatible with FreeBSD9
 options 	COMPAT_FREEBSD10	# Compatible with FreeBSD10
-# options 	SCSI_DELAY=5000		# Delay (in ms) before probing SCSI
+options         SCSI_DELAY=5000         # Delay (in ms) before probing SCSI
 options 	KTRACE			# ktrace(1) support
 options 	STACK			# stack(9) support
 options 	SYSVSHM			# SYSV-style shared memory
@@ -195,14 +195,15 @@ options ALTQ_NOPCC      # Required for SMP build
 options IPSTEALTH
 
 # VPN
-options   IPSEC
-options   IPSEC_DEBUG
+options	IPSEC
+options	IPSEC_DEBUG
+options	TCP_SIGNATURE
 
 # crypto
-device    crypto
-device    cryptodev
-device    aesni
-device    enc
+device	crypto
+device	cryptodev
+device	aesni
+device	enc
 
 # routes setfib
 options ROUTETABLES=4

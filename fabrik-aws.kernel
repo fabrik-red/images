@@ -31,11 +31,17 @@ options		PROCFS			# Process filesystem (requires PSEUDOFS)
 options		PSEUDOFS		# Pseudo-filesystem framework
 options		GEOM_PART_GPT		# GUID Partition Tables.
 options		GEOM_RAID		# Soft RAID functionality.
-options		GEOM_LABEL		# Provides labelization
-options		COMPAT_FREEBSD9		# Compatible with FreeBSD9
-options		COMPAT_FREEBSD10	# Compatible with FreeBSD10
-options		KTRACE			# ktrace(1) support
-options		STACK			# stack(9) support
+options	 	GEOM_LABEL		# Provides labelization
+options 	COMPAT_FREEBSD32	# Compatible with i386 binaries
+options 	COMPAT_FREEBSD4		# Compatible with FreeBSD4
+options 	COMPAT_FREEBSD5		# Compatible with FreeBSD5
+options 	COMPAT_FREEBSD6		# Compatible with FreeBSD6
+options 	COMPAT_FREEBSD7		# Compatible with FreeBSD7
+options	 	COMPAT_FREEBSD9		# Compatible with FreeBSD9
+options	 	COMPAT_FREEBSD10	# Compatible with FreeBSD10
+options         SCSI_DELAY=5000         # Delay (in ms) before probing SCSI
+options	 	KTRACE			# ktrace(1) support
+options	 	STACK			# stack(9) support
 options		SYSVSHM			# SYSV-style shared memory
 options		SYSVMSG			# SYSV-style message queues
 options		SYSVSEM			# SYSV-style semaphores
@@ -55,7 +61,7 @@ options		RACCT			# Resource accounting framework
 options		RACCT_DEFAULT_TO_DISABLED # Set kern.racct.enable=0 by default
 options		RCTL			# Resource limits
 
-# Debugging support.	Always need this:
+# Debugging support.  Always need this:
 options		KDB			# Enable kernel debugger support.
 options		KDB_TRACE		# Print a stack trace for a panic.
 
@@ -104,7 +110,10 @@ device		random			# Entropy device
 device		padlock_rng		# VIA Padlock RNG
 device		rdrand_rng		# Intel Bull Mountain RNG
 device		ether			# Ethernet support
+device		vlan			# 802.1Q VLAN support
+device		tun			# Packet tunnel.
 device		md			# Memory "disks"
+device		gif			# IPv6 and IPv4 tunneling
 
 # The `bpf' device enables the Berkeley Packet Filter.
 # Be aware of the administrative consequences of enabling this!
