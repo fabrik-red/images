@@ -97,7 +97,7 @@ zfs create ${ZPOOL}/jails/base
 zfs create -o exec=off -o setuid=off ${ZPOOL}/jails/base/tmp
 zfs set quota=10G ${ZPOOL}/jails/base
 zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
-zpool set cachefile=/etc/zfs/zpool.cache ${ZPOOL}
+zpool set cachefile=/boot/zfs/zpool.cache ${ZPOOL}
 
 write "Installing world, kernel and jail world"
 cd /usr/src;
@@ -284,6 +284,7 @@ EOF
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
 aws_firstboot_enable="YES"
+growfs_enable="YES"
 zfs_enable="YES"
 zfs_firstboot_enable="YES"
 hostname="fabrik" # change to your desired hostname
