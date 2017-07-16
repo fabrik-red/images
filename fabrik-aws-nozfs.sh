@@ -68,7 +68,7 @@ env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF
 env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt distribution 2>&1 | tee ${LOGDIR}/host-distribution.log
 
 # create jails dir
-mkdir -p /mnt/jails/base
+#mkdir -p /mnt/jails/base
 
 # installworld & distribution for jail
 #env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-aws-make.conf make DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${LOGDIR}/jail-installworld.log && \
