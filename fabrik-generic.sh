@@ -10,7 +10,6 @@ USER=devops
 PASSWORD=fabrik
 ZPOOL=zroot
 WRKDIR=/fabrik/generic
-KERNEL=GENERIC
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
@@ -31,7 +30,6 @@ write "Fetching src.conf, src-jail.conf, make.conf, fabrik.kernel"
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src.conf -o /etc/fabrik-src.conf
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/make-generic.conf -o /etc/fabrik-generic-make.conf
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/fabrik-generic.kernel -o /usr/src/sys/amd64/conf/${KERNEL}
 
 write "Creating ${WRKDIR} dir"
 mkdir -p ${WRKDIR}/host
@@ -40,7 +38,7 @@ mkdir -p ${WRKDIR}/jail
 write "building world, kernel and jail world"
 cd /usr/src
 env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
-env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildkernel KERNCONF=${KERNEL}
+env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildkernel
 env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 # ----------------------------------------------------------------------------
@@ -101,7 +99,7 @@ zpool set bootfs=${ZPOOL}/ROOT/default ${ZPOOL}
 write "Installing world, kernel and jail world"
 cd /usr/src;
 env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make DESTDIR=/mnt installworld 2>&1 | tee ${LOGDIR}/host-installworld.log && \
-env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make DESTDIR=/mnt installkernel KERNCONF=${KERNEL} 2>&1 | tee ${LOGDIR}/host-installkernel.log && \
+env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make DESTDIR=/mnt installkernel 2>&1 | tee ${LOGDIR}/host-installkernel.log && \
 env MAKEOBJDIRPREFIX=${WRKDIR}/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make DESTDIR=/mnt distribution 2>&1 | tee ${LOGDIR}/host-distribution.log
 
 env MAKEOBJDIRPREFIX=${WRKDIR}/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-generic-make.conf make DESTDIR=/mnt/jails/base installworld 2>&1 | tee ${LOGDIR}/jail-installworld.log && \
