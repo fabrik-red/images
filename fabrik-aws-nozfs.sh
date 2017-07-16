@@ -280,23 +280,23 @@ base {
 EOF
 
 # jail rc.conf
-cat << EOF > /mnt/jails/base/etc/rc.conf
-sshd_enable="YES"
-sshd_flags="-4"
-syslogd_flags="-ssC"
-clear_tmp_enable="YES"
-sendmail_enable="NONE"
-cron_flags="\$cron_flags -J 60"
-EOF
+#cat << EOF > /mnt/jails/base/etc/rc.conf
+#sshd_enable="YES"
+#sshd_flags="-4"
+#syslogd_flags="-ssC"
+#clear_tmp_enable="YES"
+#sendmail_enable="NONE"
+#cron_flags="\$cron_flags -J 60"
+#EOF
 
 # jail /etc/resolv.conf
-cat << EOF > /mnt/jails/base/etc/resolv.conf
-nameserver 84.200.70.40
-nameserver 208.67.222.222
-nameserver 4.2.2.2
-nameserver 2001:4860:4860::8888
-nameserver 2001:1608:10:25::1c04:b12f
-EOF
+#cat << EOF > /mnt/jails/base/etc/resolv.conf
+#nameserver 84.200.70.40
+#nameserver 208.67.222.222
+#nameserver 4.2.2.2
+#nameserver 2001:4860:4860::8888
+#nameserver 2001:1608:10:25::1c04:b12f
+#EOF
 
 umount /dev/${mddev}
 tunefs -j enable /dev/${mddev}
