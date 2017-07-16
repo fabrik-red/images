@@ -96,6 +96,8 @@ device		atkbd			# AT keyboard
 
 # vt is the new video console driver
 device		vt
+device		vt_vga
+device		vt_efifb
 # Change kernel messages color
 options		TERMINAL_KERN_ATTR=(FG_YELLOW|BG_BLACK)
 
