@@ -138,11 +138,13 @@ device		pty
 
 # crypto
 device		crypto
-device		cryptodev
 device		aesni
 device		enc
 
 # disk encryption
 options		GEOM_ELI
+
+#Netmap provides direct access to TX/RX rings on supported NICs
+device		netmap                  # netmap(4) support
 
 # /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
