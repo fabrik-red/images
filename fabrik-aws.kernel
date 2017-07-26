@@ -147,4 +147,7 @@ options		GEOM_ELI
 #Netmap provides direct access to TX/RX rings on supported NICs
 device		netmap                  # netmap(4) support
 
+# ena - FreeBSD kernel driver for Elastic Network Adapter (ENA) Family
+device		ena
+
 # /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
