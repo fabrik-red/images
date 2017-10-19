@@ -28,11 +28,12 @@ write "Fetching src-jail.conf"
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
 
 write "Creating /fabrik dir"
-mkdir -p /fabrik/jail
+set +e
 zfs create -o mountpoint=/fabrik ${ZPOOL}/fabrik
 zfs create ${ZPOOL}/fabrik/jail
 zfs create ${ZPOOL}/fabrik/jail/obj
 zfs create ${ZPOOL}/fabrik/jail/base
+set -e
 
 write "building jail"
 cd /usr/src
