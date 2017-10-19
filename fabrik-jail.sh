@@ -24,24 +24,23 @@ write() {
 write "Checking out and updating sources FreeBSD: ${FREEBSD_VERSION}"
 svnlite co svn://svn.freebsd.org/base/stable/${FREEBSD_VERSION} /usr/src
 
-write "Fetching src.conf, src-jail.conf, make.conf, fabrik.kernel"
+write "Fetching src-jail.conf"
 fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/make.conf -o /etc/fabrik-make.conf
 
 write "Creating /fabrik dir"
 mkdir -p /fabrik/jail
 zfs create -o mountpoint=/fabrik ${ZPOOL}/fabrik
 zfs create ${ZPOOL}/fabrik/jail
-zfs create ${ZPOOL}/fabrik/jail/ojb
+zfs create ${ZPOOL}/fabrik/jail/obj
 zfs create ${ZPOOL}/fabrik/jail/base
 
 write "building jail"
 cd /usr/src
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 write "Installing world, kernel and jail world"
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
 
 # jail rc.conf
 cat << EOF > /fabrik/jail/base/etc/rc.conf
