@@ -31,17 +31,18 @@ write "Creating /fabrik dir"
 set +e
 zfs create -o mountpoint=/fabrik ${ZPOOL}/fabrik
 zfs create ${ZPOOL}/fabrik/jail
-zfs create ${ZPOOL}/fabrik/jail/obj
 zfs create ${ZPOOL}/fabrik/jail/base
+zfs create ${ZPOOL}/fabrik/jail/obj
+zfs create ${ZPOOL}/fabrik/tmp
 set -e
 
 write "building jail"
 cd /usr/src
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
+env WORLDTMP=/fabrik/tmp MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 write "Installing world, kernel and jail world"
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
+env WORLDTMP=/fabrik/tmp MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
+env WORLDTMP=/fabrik/tmp MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
 
 # jail rc.conf
 cat << EOF > /fabrik/jail/base/etc/rc.conf
