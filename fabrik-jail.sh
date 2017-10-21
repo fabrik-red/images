@@ -33,7 +33,7 @@ zfs create -o mountpoint=/fabrik ${ZPOOL}/fabrik
 zfs create ${ZPOOL}/fabrik/jail
 zfs create ${ZPOOL}/fabrik/jail/base
 zfs create ${ZPOOL}/fabrik/jail/obj
-zfs create ${ZPOOL}/fabrik/tmp
+zfs set exec=on ${ZPOOL}/tmp
 set -e
 
 write "building jail"
@@ -41,8 +41,8 @@ cd /usr/src
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 write "Installing world, kernel and jail world"
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make WORLDTMP=/fabrik/tmp DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make WORLDTMP=/fabrik/tmp DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
 
 # jail rc.conf
 cat << EOF > /fabrik/jail/base/etc/rc.conf
@@ -60,6 +60,8 @@ nameserver 4.2.2.2
 nameserver 2001:4860:4860::8888
 nameserver 2001:1608:10:25::1c04:b12f
 EOF
+
+zfs set exec=off ${ZPOOL}/tmp
 
 END=$(date +%s)
 DIFF=$(echo "$END - $START" | bc)
