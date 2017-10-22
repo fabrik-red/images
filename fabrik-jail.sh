@@ -2,10 +2,12 @@
 # ----------------------------------------------------------------------------
 # fabrik.sh - create base jail
 # ----------------------------------------------------------------------------
-NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
-ZPOOL=tank
 JAILNAME=${1:-base}
+NUMBER_OF_CORES=`sysctl -n hw.ncpu`
+PASSWORD=fabrik
+USER=devops
+ZPOOL=tank
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
@@ -41,6 +43,11 @@ env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/et
 write "Installing world, kernel and jail world"
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/${JAILNAME} installworld 2>&1 | tee /tmp/jail-installworld.log && \
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/${JAILNAME} distribution 2>&1 | tee /tmp/jail-distribution.log
+
+write "Creating user ${USER} with password ${PASSWORD}"
+chroot /fabrik/jail/${JAILNAME} pw useradd ${USER} -m -G wheel -s /bin/csh -h 0 <<EOP
+${PASSWORD}
+EOP
 
 # jail rc.conf
 cat << EOF > /fabrik/jail/${JAILNAME}/etc/rc.conf
