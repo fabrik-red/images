@@ -51,10 +51,11 @@ EOP
 
 # jail rc.conf
 cat << EOF > /fabrik/jail/${JAILNAME}/etc/rc.conf
-syslogd_flags="-ssC8"
 clear_tmp_enable="YES"
-sendmail_enable="NONE"
 cron_flags="\$cron_flags -J 60"
+sendmail_enable="NONE"
+sshd_enable="YES"
+syslogd_flags="-ssC8"
 EOF
 
 # jail /etc/resolv.conf
