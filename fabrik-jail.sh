@@ -1,13 +1,10 @@
 #!/bin/sh
-set -e
-
 # ----------------------------------------------------------------------------
 # fabrik.sh - create base jail
 # ----------------------------------------------------------------------------
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 ZPOOL=tank
-WRKDIR=/tmp
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
@@ -41,8 +38,8 @@ cd /usr/src
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 write "Installing world, kernel and jail world"
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee ${WRKDIR}/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee ${WRKDIR}/jail-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee /tmp/jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee /tmp/jail-distribution.log
 
 # jail rc.conf
 cat << EOF > /fabrik/jail/base/etc/rc.conf
