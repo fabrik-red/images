@@ -29,7 +29,7 @@ write "Creating /fabrik dir"
 set +e
 zfs create -o mountpoint=/fabrik ${ZPOOL}/fabrik
 zfs create ${ZPOOL}/fabrik/jail
-zfs create ${ZPOOL}/fabrik/jail/base
+zfs create ${ZPOOL}/fabrik/jail/${JAILNAME}
 zfs create ${ZPOOL}/fabrik/jail/obj
 zfs set exec=on ${ZPOOL}/tmp
 set -e
