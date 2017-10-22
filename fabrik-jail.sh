@@ -5,6 +5,7 @@
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 FREEBSD_VERSION=11
 ZPOOL=tank
+JAILNAME=${1:-base}
 
 # ----------------------------------------------------------------------------
 # no need to edit below this
@@ -38,11 +39,11 @@ cd /usr/src
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 write "Installing world, kernel and jail world"
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base installworld 2>&1 | tee /tmp/jail-installworld.log && \
-env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/base distribution 2>&1 | tee /tmp/jail-distribution.log
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/${JAILNAME} installworld 2>&1 | tee /tmp/jail-installworld.log && \
+env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/fabrik/jail/${JAILNAME} distribution 2>&1 | tee /tmp/jail-distribution.log
 
 # jail rc.conf
-cat << EOF > /fabrik/jail/base/etc/rc.conf
+cat << EOF > /fabrik/jail/${JAILNAME}/etc/rc.conf
 syslogd_flags="-ssC8"
 clear_tmp_enable="YES"
 sendmail_enable="NONE"
@@ -50,7 +51,7 @@ cron_flags="\$cron_flags -J 60"
 EOF
 
 # jail /etc/resolv.conf
-cat << EOF > /fabrik/jail/base/etc/resolv.conf
+cat << EOF > /fabrik/jail/${JAILNAME}/etc/resolv.conf
 nameserver 84.200.70.40
 nameserver 208.67.222.222
 nameserver 4.2.2.2
