@@ -54,7 +54,6 @@ cat << EOF > /fabrik/jail/${JAILNAME}/etc/rc.conf
 clear_tmp_enable="YES"
 cron_flags="\$cron_flags -J 60"
 sendmail_enable="NONE"
-sshd_enable="YES"
 syslogd_flags="-ssC8"
 EOF
 
