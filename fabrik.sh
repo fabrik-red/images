@@ -197,7 +197,7 @@ Xname=gce_firstboot
 Xrcvar=gce_firstboot_enable
 Xstart_cmd="${name}_run"
 X
-XSSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/ssh-keys"
+XSSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/keys"
 X
 Xgce_firstboot_run()
 X{
