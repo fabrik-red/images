@@ -5,6 +5,7 @@
 if [ $# -eq 0 ]
   then
     echo "enter name of the jail"
+    exit
 fi
 
 FREEBSD_VERSION=11
