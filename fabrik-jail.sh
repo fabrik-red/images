@@ -2,6 +2,11 @@
 # ----------------------------------------------------------------------------
 # fabrik.sh - create base jail
 # ----------------------------------------------------------------------------
+if [ $# -eq 0 ]
+  then
+    echo "enter name of the jail"
+fi
+
 FREEBSD_VERSION=11
 JAILNAME=${1:-base}
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
