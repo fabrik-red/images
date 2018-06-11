@@ -96,7 +96,8 @@ main $@
 START=$(date +%s)
 
 set -e
-[ ! -d "${JAILPATH}" ] && write "Creating ${JAILPATH#*/}" && zfs create -p ${JAILPATH#*/}
+# [ ! -d "${JAILPATH}" ] && write "Creating ${JAILPATH#*/}" && zfs create -p ${ZPOOL}${JAILPATH#*/}
+[ ! -d "${JAILPATH}" ] && write "Creating ${JAILPATH#*/}" && zfs create -p ${ZPOOL}${JAILPATH}
 set +e
 
 write "Checking out and updating sources FreeBSD: ${FREEBSD_VERSION}"
@@ -109,11 +110,9 @@ write "Creating /fabrik dir"
 set +e
 zfs create -o mountpoint=/fabrik ${ZPOOL}/fabrik
 zfs create ${ZPOOL}/fabrik/jail
-zfs create ${JAILPATH#*/}
 zfs create ${ZPOOL}/fabrik/jail/obj
 zfs set exec=on ${ZPOOL}/tmp
 set -e
-
 
 write "building jail"
 cd /usr/src
