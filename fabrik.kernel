@@ -228,4 +228,8 @@ device		netmap                  # netmap(4) support
 # ena - FreeBSD kernel driver for Elastic Network Adapter (ENA) Family
 device		ena
 
+# nginx accept_filter=(dataready|httpready)
+options ACCEPT_FILTER_HTTP
+options ACCEPT_FILTER_DATA
+
 # /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
