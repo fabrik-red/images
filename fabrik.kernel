@@ -14,6 +14,8 @@ options 	SCHED_ULE		# ULE scheduler
 options 	PREEMPTION		# Enable kernel thread preemption
 options 	INET			# InterNETworking
 options 	INET6			# IPv6 communications protocols
+options		IPSEC			# IP (v4/v6) security
+options		IPSEC_SUPPORT		# Allow kldload of ipsec and tcpmd5
 options 	TCP_OFFLOAD		# TCP offload
 options 	SCTP			# Stream Control Transmission Protocol
 options 	FFS			# Berkeley Fast Filesystem
@@ -23,8 +25,8 @@ options 	UFS_DIRHASH		# Improve performance on big directories
 options 	UFS_GJOURNAL		# Enable gjournal-based UFS journaling
 options 	QUOTA			# Enable disk quotas for UFS
 options 	MD_ROOT			# MD is a potential root device
-options 	NFSCL			# New Network Filesystem Client
-options 	NFSD			# New Network Filesystem Server
+options 	NFSCL			# Network Filesystem Client
+options 	NFSD			# Network Filesystem Server
 options 	NFSLOCKD		# Network Lock Manager
 options 	NFS_ROOT		# NFS usable as /, requires NFSCL
 options 	MSDOSFS			# MSDOS Filesystem
@@ -167,6 +169,17 @@ device		hyperv			# HyperV drivers
 options 	XENHVM			# Xen HVM kernel infrastructure
 device		xenpci			# Xen HVM Hypervisor services driver
 
+# vmware
+device		vmx
+
+#Netmap provides direct access to TX/RX rings on supported NICs
+device		netmap                  # netmap(4) support
+
+# The crypto framework is required by IPSEC
+device		crypto			# Required by IPSEC
+device		aesni
+device		enc
+
 # nullfs
 options 	NULLFS
 options 	FDESCFS
@@ -177,9 +190,6 @@ device    	snp
 
 # zpty
 device 		pty
-
-# vmware
-device		vmx
 
 # pf
 device pf
@@ -198,32 +208,20 @@ options ALTQ_NOPCC      # Required for SMP build
 # This option is used for by firewall not to decrement time to live (TTL) value.
 # This is used to hide presence of your firewall for outside world
 # (your firewall will not be seen with traceroute command).
-options IPSTEALTH
-
-# VPN
-options	IPSEC
-options	IPSEC_DEBUG
-options	TCP_SIGNATURE
-
-# crypto
-device	crypto
-device	aesni
-device	enc
+options	IPSTEALTH
+options	TCP_SIGNATURE # include support for RFC 2385
 
 # routes setfib
 options ROUTETABLES=4
 
 # encapsulating network device
-device gre
+device		gre
 
 # Common Address Redundancy Protocol
-device carp
+device		carp
 
 # disk encryption
 options		GEOM_ELI
-
-#Netmap provides direct access to TX/RX rings on supported NICs
-device		netmap                  # netmap(4) support
 
 # ena - FreeBSD kernel driver for Elastic Network Adapter (ENA) Family
 device		ena
