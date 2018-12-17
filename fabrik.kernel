@@ -227,7 +227,6 @@ device		carp
 
 # disk encryption
 options		GEOM_ELI
-options 	GEOM_PART_GPT		# GUID Partition Tables.
 
 # ena - FreeBSD kernel driver for Elastic Network Adapter (ENA) Family
 device		ena
