@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 # FABRIK: all in one working in AWS & GCE and VPC's that offer VNC
 # - xen & vmx (KVM/VMWARE)
-# - Intel em0, igb, ixgbe
+# - Intel em0, ix
 # - USB
 # - pf
 # - CARP
@@ -122,8 +122,8 @@ device		uart			# Generic UART driver
 
 # PCI Ethernet NICs.
 device		em			# Intel PRO/1000 Gigabit Ethernet Family
-device		igb			# Intel PRO/1000 PCIE Server Gigabit Family
 device		ix			# Intel PRO/10GbE PCIE Ethernet Family
+device		ixv			# Intel PRO/10GbE PCIE VF Ethernet
 
 # Pseudo devices.
 device		crypto			# core crypto support
