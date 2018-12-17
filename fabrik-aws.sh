@@ -5,7 +5,7 @@ set -e
 # fabrik.sh - All in one script to create the disk.raw image
 # ----------------------------------------------------------------------------
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
-FREEBSD_VERSION=11
+FREEBSD_VERSION=12
 USER=devops
 PASSWORD=fabrik
 ZPOOL=zroot

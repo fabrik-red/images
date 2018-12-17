@@ -11,12 +11,17 @@ cpu		HAMMER
 ident   	FABRIK
 
 options 	SCHED_ULE		# ULE scheduler
+options 	NUMA			# Non-Uniform Memory Architecture support
 options 	PREEMPTION		# Enable kernel thread preemption
+options 	VIMAGE			# Subsystem virtualization, e.g. VNET
 options 	INET			# InterNETworking
 options 	INET6			# IPv6 communications protocols
-options		IPSEC			# IP (v4/v6) security
-options		IPSEC_SUPPORT		# Allow kldload of ipsec and tcpmd5
+options 	IPSEC			# IP (v4/v6) security
+options 	IPSEC_SUPPORT		# Allow kldload of ipsec and tcpmd5
 options 	TCP_OFFLOAD		# TCP offload
+options 	TCP_BLACKBOX		# Enhanced TCP event logging
+options 	TCP_HHOOK		# hhook(9) framework for TCP
+options		TCP_RFC7413		# TCP Fast Open
 options 	SCTP			# Stream Control Transmission Protocol
 options 	FFS			# Berkeley Fast Filesystem
 options 	SOFTUPDATES		# Enable FFS soft updates support
@@ -33,9 +38,9 @@ options 	MSDOSFS			# MSDOS Filesystem
 options 	CD9660			# ISO 9660 Filesystem
 options 	PROCFS			# Process filesystem (requires PSEUDOFS)
 options 	PSEUDOFS		# Pseudo-filesystem framework
-options 	GEOM_PART_GPT		# GUID Partition Tables.
 options 	GEOM_RAID		# Soft RAID functionality.
 options 	GEOM_LABEL		# Provides labelization
+options 	EFIRT			# EFI Runtime Services support
 options 	COMPAT_FREEBSD32	# Compatible with i386 binaries
 options 	COMPAT_FREEBSD4		# Compatible with FreeBSD4
 options 	COMPAT_FREEBSD5		# Compatible with FreeBSD5
@@ -43,7 +48,8 @@ options 	COMPAT_FREEBSD6		# Compatible with FreeBSD6
 options 	COMPAT_FREEBSD7		# Compatible with FreeBSD7
 options 	COMPAT_FREEBSD9		# Compatible with FreeBSD9
 options 	COMPAT_FREEBSD10	# Compatible with FreeBSD10
-options         SCSI_DELAY=5000         # Delay (in ms) before probing SCSI
+options 	COMPAT_FREEBSD11	# Compatible with FreeBSD11
+options 	SCSI_DELAY=5000		# Delay (in ms) before probing SCSI
 options 	KTRACE			# ktrace(1) support
 options 	STACK			# stack(9) support
 options 	SYSVSHM			# SYSV-style shared memory
@@ -71,7 +77,6 @@ options 	KDB_TRACE		# Print a stack trace for a panic.
 
 # Make an SMP-capable kernel by default
 options 	SMP			# Symmetric MultiProcessor Kernel
-options 	DEVICE_NUMA		# I/O Device Affinity
 options 	EARLY_AP_STARTUP
 
 # CPU frequency control
@@ -121,6 +126,7 @@ device		igb			# Intel PRO/1000 PCIE Server Gigabit Family
 device		ix			# Intel PRO/10GbE PCIE Ethernet Family
 
 # Pseudo devices.
+device		crypto			# core crypto support
 device		loop			# Network loopback
 device		random			# Entropy device
 device		padlock_rng		# VIA Padlock RNG
@@ -143,17 +149,17 @@ device		nmdm
 device		bpf			# Berkeley packet filter
 
 # USB support
-device          uhci                    # UHCI PCI->USB interface
-device          ohci                    # OHCI PCI->USB interface
-device          ehci                    # EHCI PCI->USB interface (USB 2.0)
-device          xhci                    # XHCI PCI->USB interface (USB 3.0)
-device          usb                     # USB Bus (required)
-device          ukbd                    # Keyboard
-device          umass                   # Disks/Mass storage - Requires scbus and da
+device		uhci			# UHCI PCI->USB interface
+device		ohci			# OHCI PCI->USB interface
+device		ehci			# EHCI PCI->USB interface (USB 2.0)
+device		xhci			# XHCI PCI->USB interface (USB 3.0)
+device		usb			# USB Bus (required)
+device		ukbd			# Keyboard
+device		umass			# Disks/Mass storage - Requires scbus and da
 
 # VirtIO support
 device		virtio			# Generic VirtIO bus (required)
-device		virtio_pci		# VirtIO PCI Interface
+device		virtio_pci		# VirtIO PCI device
 device		vtnet			# VirtIO Ethernet device
 device		virtio_blk		# VirtIO Block device
 device		virtio_scsi		# VirtIO SCSI device
@@ -176,7 +182,6 @@ device		vmx
 device		netmap                  # netmap(4) support
 
 # The crypto framework is required by IPSEC
-device		crypto			# Required by IPSEC
 device		aesni
 device		enc
 
@@ -222,6 +227,7 @@ device		carp
 
 # disk encryption
 options		GEOM_ELI
+options 	GEOM_PART_GPT		# GUID Partition Tables.
 
 # ena - FreeBSD kernel driver for Elastic Network Adapter (ENA) Family
 device		ena
@@ -230,4 +236,4 @@ device		ena
 options ACCEPT_FILTER_HTTP
 options ACCEPT_FILTER_DATA
 
-# /* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
+# vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab:

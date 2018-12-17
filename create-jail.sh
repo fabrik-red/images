@@ -6,7 +6,7 @@
 set_defaults() {
     ZPOOL="tank"
     JAILNAME="base"
-    FREEBSD_VERSION=11
+    FREEBSD_VERSION=12
     NUMBER_OF_CORES=`sysctl -n hw.ncpu`
     PASSWORD=fabrik
     USER=devops

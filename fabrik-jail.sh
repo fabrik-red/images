@@ -8,7 +8,7 @@ if [ $# -eq 0 ]
     exit
 fi
 
-FREEBSD_VERSION=11
+FREEBSD_VERSION=12
 JAILNAME=${1:-base}
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
 PASSWORD=fabrik
