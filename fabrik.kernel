@@ -138,11 +138,6 @@ device		md			# Memory "disks"
 device		gif			# IPv6 and IPv4 tunneling
 device		firmware		# firmware assist module
 
-# bhyve
-device		tap
-device		if_bridge
-device		nmdm
-
 # The `bpf' device enables the Berkeley Packet Filter.
 # Be aware of the administrative consequences of enabling this!
 # Note that 'bpf' is required for DHCP.
@@ -221,6 +216,7 @@ options ROUTETABLES=4
 
 # encapsulating network device
 device		gre
+device		tap
 
 # Common Address Redundancy Protocol
 device		carp
