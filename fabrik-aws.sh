@@ -290,7 +290,7 @@ ifconfig_DEFAULT="SYNCDHCP -tso"
 clear_tmp_enable="YES"
 dumpdev="NO"
 ntpd_enable="YES"
-ntpdate_enable="YES"
+ntpd_sync_on_start="YES"
 sendmail_enable="NONE"
 sshd_enable="YES"
 syslogd_flags="-ssC"
@@ -353,11 +353,10 @@ EOF
 
 # jail /etc/resolv.conf
 cat << EOF > /mnt/jails/base/etc/resolv.conf
-nameserver 84.200.70.40
-nameserver 208.67.222.222
-nameserver 4.2.2.2
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+nameserver 2606:4700:4700::1111
 nameserver 2001:4860:4860::8888
-nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
 zpool export ${ZPOOL}
