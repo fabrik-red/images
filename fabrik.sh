@@ -25,10 +25,10 @@ write "Checking out and updating sources FreeBSD: ${FREEBSD_VERSION}"
 svnlite co svn://svn.freebsd.org/base/stable/${FREEBSD_VERSION} /usr/src
 
 write "Fetching src.conf, src-jail.conf, make.conf, fabrik.kernel"
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src.conf -o /etc/fabrik-src.conf
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/make.conf -o /etc/fabrik-make.conf
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/fabrik.kernel -o /usr/src/sys/amd64/conf/FABRIK
+fetch --no-verify-peer -a https://raw.githubusercontent.com/fabrik-red/images/master/src.conf -o /etc/fabrik-src.conf
+fetch --no-verify-peer -a https://raw.githubusercontent.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
+fetch --no-verify-peer -a https://raw.githubusercontent.com/fabrik-red/images/master/make.conf -o /etc/fabrik-make.conf
+fetch --no-verify-peer -a https://raw.githubusercontent.com/fabrik-red/images/master/fabrik.kernel -o /usr/src/sys/amd64/conf/FABRIK
 
 write "Creating /fabrik dir"
 mkdir -p /fabrik/host
@@ -433,11 +433,10 @@ EOF
 
 # jail /etc/resolv.conf
 cat << EOF > /mnt/jails/base/etc/resolv.conf
-nameserver 84.200.70.40
-nameserver 208.67.222.222
-nameserver 4.2.2.2
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+nameserver 2606:4700:4700::1111
 nameserver 2001:4860:4860::8888
-nameserver 2001:1608:10:25::1c04:b12f
 EOF
 
 zpool export ${ZPOOL}
