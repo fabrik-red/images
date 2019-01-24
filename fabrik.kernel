@@ -236,4 +236,8 @@ device		ena
 options ACCEPT_FILTER_HTTP
 options ACCEPT_FILTER_DATA
 
+# ntp
+options MAC
+options MAC_NTPD
+
 # vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab:
