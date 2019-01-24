@@ -92,6 +92,11 @@ device		ahci			# AHCI-compatible SATA controllers
 device		ata			# Legacy ATA/SATA controllers
 options 	ATA_STATIC_ID		# Static device numbering
 
+# SCSI Controllers (for VMware Fusion)
+device		mpt			# LSI-Logic MPT-Fusion
+device		mps			# LSI-Logic MPT-Fusion 2
+device		mpr			# LSI-Logic MPT-Fusion 3
+
 # ATA/SCSI peripherals
 device		scbus			# SCSI bus (required for ATA/SCSI)
 device		ch			# SCSI media changers
