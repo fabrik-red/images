@@ -351,10 +351,10 @@ EOF
 
 # /etc/rc.conf
 cat << EOF > /mnt/etc/rc.conf
+zfs_firstboot_enable="YES"
 aws_firstboot_enable="YES"
 gce_firstboot_enable="YES"
 pf_firstboot_enable="YES"
-zfs_firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 hostname="fabrik" # change to your desired hostname
