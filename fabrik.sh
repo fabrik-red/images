@@ -63,7 +63,7 @@ sysctl vfs.zfs.min_auto_ashift=12
 
 write "Creating zpool"
 set -v
-zpool create -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
+zpool create -o cachefile=/tmp/${ZPOOL}.cache -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
 zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
 zfs create -o mountpoint=/tmp -o exec=off -o setuid=off ${ZPOOL}/tmp
@@ -440,7 +440,7 @@ nameserver 2001:4860:4860::8888
 EOF
 
 zpool export ${ZPOOL} && zpool import ${ZPOOL}
-cp /boot/zfs/${ZPOOL}.cache /mnt/boot/zfs/
+cp /tmp/${ZPOOL}.cache /mnt/boot/zfs/
 zpool export ${ZPOOL}
 mdconfig -d -u ${mddev}
 chflags -R noschg /mnt
