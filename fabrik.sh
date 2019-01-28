@@ -439,7 +439,6 @@ nameserver 2606:4700:4700::1111
 nameserver 2001:4860:4860::8888
 EOF
 
-zpool export ${ZPOOL} && zpool import ${ZPOOL}
 cp /tmp/${ZPOOL}.cache /mnt/boot/zfs/
 zpool export ${ZPOOL}
 mdconfig -d -u ${mddev}
