@@ -439,7 +439,7 @@ nameserver 2606:4700:4700::1111
 nameserver 2001:4860:4860::8888
 EOF
 
-cp /tmp/${ZPOOL}.cache /mnt/boot/zfs/
+cp /tmp/${ZPOOL}.cache /mnt/boot/zfs/zpool.cache
 zpool export ${ZPOOL}
 mdconfig -d -u ${mddev}
 chflags -R noschg /mnt

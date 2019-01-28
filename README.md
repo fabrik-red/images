@@ -7,3 +7,25 @@ To create a jail using with `create-jail.sh`:
     # ./create-jail.sh -p=/jails/foo
 
 Here `/jails` already exists
+
+To mount the `disk.raw`:
+
+```
+> zpool import -o readonly=on -d /dev -f -R /mnt
+   pool: zroot
+     id: 15033985127548010097
+  state: ONLINE
+ action: The pool can be imported using its name or numeric identifier.
+ config:
+
+        zroot        ONLINE
+          gpt/disk0  ONLINE
+```
+
+Then use:
+
+    zpool import -o readonly=on -d /dev -f -R /mnt 15033985127548010097
+
+If know the pool name:
+
+    zpool import -o readonly=on -d /dev -f -R /mnt zroot
