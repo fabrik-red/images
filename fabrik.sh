@@ -334,6 +334,7 @@ cp -f /mnt/root/.cshrc /mnt/usr/home/devops/.cshrc
 # cat << EOF > /mnt/etc/fstab
 # /dev/gpt/swap0   none    swap    sw      0       0
 # EOF
+touch /mnt/etc/fstab
 
 # /boot/loader.conf
 cat << EOF > /mnt/boot/loader.conf
