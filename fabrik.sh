@@ -55,7 +55,7 @@ mddev=$(mdconfig -a -t vnode -f ${RAW})
 
 gpart create -s gpt ${mddev}
 gpart add -a 4k -s 512k -t freebsd-boot ${mddev}
-gpart add -a 4k -t freebsd-swap -s 1G -l swap0 ${mddev}
+# gpart add -a 4k -t freebsd-swap -s 1G -l swap0 ${mddev}
 gpart add -a 1m -t freebsd-zfs -l disk0 ${mddev}
 gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
 
@@ -64,6 +64,7 @@ sysctl vfs.zfs.min_auto_ashift=12
 write "Creating zpool"
 set -v
 zpool create -o cachefile=/tmp/${ZPOOL}.cache -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
+zfs create -V 1G -o org.freebsd:swap=on -o checksum=off -o compression=off -o dedup=off -o sync=disabled -o primarycache=none ${ZPOOL}/swap
 zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
 zfs create -o mountpoint=/tmp -o exec=off -o setuid=off ${ZPOOL}/tmp
