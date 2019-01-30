@@ -331,9 +331,9 @@ CSHRC
 cp -f /mnt/root/.cshrc /mnt/usr/home/devops/.cshrc
 
 # /etc/fstab
-cat << EOF > /mnt/etc/fstab
-/dev/gpt/swap0   none    swap    sw      0       0
-EOF
+# cat << EOF > /mnt/etc/fstab
+# /dev/gpt/swap0   none    swap    sw      0       0
+# EOF
 
 # /boot/loader.conf
 cat << EOF > /mnt/boot/loader.conf
