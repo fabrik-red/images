@@ -145,7 +145,7 @@ X{
 X       DISK=$(gpart list | awk '/Geom name/{split($0,a,": "); print a[2]}')
 X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,": "); print arr[2]; flag=0}')
 X       gpart recover ${DISK}
-X       gpart resize -i 3 ${DISK}
+X       gpart resize -i 2 ${DISK}
 X       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
 X}
 X
