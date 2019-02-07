@@ -25,7 +25,7 @@ echo -e '\e[0m'
 usage() {
     set_defaults
     cat <<-EOF
-Example: $(basename "$0") -p=/tank/fabrik/jails/test
+Example: $(basename "$0") -p=/jails/test <-- zfs create tank/jails/test/tmp (in advance)
          $(basename "$0") -n=xxx (jail path will be /fabrik/jail/xxx)
          $(basename "$0") -z=tank -n=test (jail path will be <tank>/fabrik/jail/test)
 
