@@ -104,7 +104,7 @@ write "Checking out and updating sources FreeBSD: ${FREEBSD_VERSION}"
 svnlite co svn://svn.freebsd.org/base/stable/${FREEBSD_VERSION} /usr/src
 
 write "Fetching src-jail.conf"
-fetch --no-verify-peer -a https://rawgit.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
+fetch --no-verify-peer -a https://raw.githubusercontent.com/fabrik-red/images/master/src-jail.conf -o /etc/src-jail.conf
 
 write "Creating /fabrik dir"
 set +e
