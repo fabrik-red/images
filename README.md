@@ -29,3 +29,13 @@ Then use:
 If know the pool name:
 
     zpool import -o readonly=on -d /dev -f -R /mnt zroot
+
+## update existing jail
+
+cd into `/usr/src`:
+
+    env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make -DNO_CLEAN -j16 buildworld
+
+Then stop the jail and install the world:
+
+    env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/jails/test installworld
