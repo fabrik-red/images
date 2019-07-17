@@ -126,6 +126,7 @@ options		TERMINAL_KERN_ATTR=(FG_YELLOW|BG_BLACK)
 device		uart			# Generic UART driver
 
 # PCI Ethernet NICs.
+device		iflib
 device		em			# Intel PRO/1000 Gigabit Ethernet Family
 device		ix			# Intel PRO/10GbE PCIE Ethernet Family
 device		ixv			# Intel PRO/10GbE PCIE VF Ethernet
