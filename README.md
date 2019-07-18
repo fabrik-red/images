@@ -39,3 +39,8 @@ cd into `/usr/src`:
 Then stop the jail and install the world:
 
     env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/make.conf make DESTDIR=/jails/test installworld
+
+
+Using `gtar` for google compute engine:
+
+    gtar -cSzf disk-zfs-swap.tar.gz disk.raw
