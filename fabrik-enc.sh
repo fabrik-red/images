@@ -67,7 +67,7 @@ sysctl vfs.zfs.min_auto_ashift=12
 
 write "Creating zpool"
 set -v
-zpool create -o cachefile=/tmp/${ZPOOL}.cache -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0
+zpool create -o cachefile=/tmp/${ZPOOL}.cache -o altroot=/mnt -o autoexpand=on -O compress=lz4 -O atime=off ${ZPOOL} /dev/gpt/disk0.eli
 zfs create -V 1G -o org.freebsd:swap=on -o checksum=off -o compression=off -o dedup=off -o sync=disabled -o primarycache=none ${ZPOOL}/swap
 zfs create -o mountpoint=none ${ZPOOL}/ROOT
 zfs create -o mountpoint=/ ${ZPOOL}/ROOT/default
