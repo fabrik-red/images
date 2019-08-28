@@ -448,6 +448,7 @@ EOF
 
 cp /tmp/${ZPOOL}.cache /mnt/boot/zfs/zpool.cache
 zpool export ${ZPOOL}
+geli detach gpt/disk0
 mdconfig -d -u ${mddev}
 chflags -R noschg /mnt
 rm -rf /mnt/*
