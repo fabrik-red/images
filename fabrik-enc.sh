@@ -342,7 +342,6 @@ touch /mnt/etc/fstab
 
 # /boot/loader.conf
 cat << EOF > /mnt/boot/loader.conf
-geom_eli_load="YES"
 autoboot_delay="-1"
 beastie_disable="YES"
 boot_multicons="YES"
