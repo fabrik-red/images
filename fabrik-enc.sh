@@ -1,6 +1,6 @@
 #!/bin/sh
 # ----------------------------------------------------------------------------
-# fabrik.sh - All in one script to create the disk.raw image
+# fabrik.sh - All in one script to create the disk-enc.raw image
 # ----------------------------------------------------------------------------
 FREEBSD_VERSION=12
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
@@ -42,10 +42,10 @@ env MAKEOBJDIRPREFIX=/fabrik/host/obj SRCCONF=/etc/fabrik-src.conf __MAKE_CONF=/
 env MAKEOBJDIRPREFIX=/fabrik/jail/obj SRCCONF=/etc/src-jail.conf __MAKE_CONF=/etc/fabrik-make.conf make -DNO_CLEAN -j${NUMBER_OF_CORES} buildworld
 
 # ----------------------------------------------------------------------------
-# Creating disk.raw
+# Creating disk-enc.raw
 # ----------------------------------------------------------------------------
 cd /fabrik
-RAW=disk.raw
+RAW=disk-enc.raw
 VMSIZE=2g
 WRKDIR=/tmp
 
