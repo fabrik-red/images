@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 FREEBSD_VERSION=12
 NUMBER_OF_CORES=`sysctl -n hw.ncpu`
+BOOT_PASSWORD=tequila # change this
 PASSWORD=fabrik
 USER=devops
 ZPOOL=zroot
@@ -56,8 +57,11 @@ mddev=$(mdconfig -a -t vnode -f ${RAW})
 gpart create -s gpt ${mddev}
 gpart add -a 4k -s 512k -t freebsd-boot ${mddev}
 gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
-# gpart add -a 4k -t freebsd-swap -s 1G -l swap0 ${mddev}
 gpart add -a 1m -t freebsd-zfs -l disk0 ${mddev}
+echo ${BOOT_PASSWORD} | geli init -b -e aes-xts -l 256 -s 4096 -J - /dev/${mddev}p2
+echo ${BOOT_PASSWORD} | geli attach -j - gpt/disk0
+geli configure -g ${mddev}p2
+
 
 sysctl vfs.zfs.min_auto_ashift=12
 
@@ -338,6 +342,7 @@ touch /mnt/etc/fstab
 
 # /boot/loader.conf
 cat << EOF > /mnt/boot/loader.conf
+geom_eli_load="YES"
 autoboot_delay="-1"
 beastie_disable="YES"
 boot_multicons="YES"
