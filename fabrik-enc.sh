@@ -58,10 +58,9 @@ gpart create -s gpt ${mddev}
 gpart add -a 4k -s 512k -t freebsd-boot ${mddev}
 gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ${mddev}
 gpart add -a 1m -t freebsd-zfs -l disk0 ${mddev}
-echo ${BOOT_PASSWORD} | geli init -b -e AES-XTS -l 256 -s 4096 -J - /dev/gpt/disk0
-echo ${BOOT_PASSWORD} | geli attach -j - gpt/disk0
-geli configure -g /dev/gpt/disk0
-
+echo -n "${BOOT_PASSWORD}" | geli init -b -e AES-XTS -l 256 -s 4096 -J - /dev/gpt/disk0
+geli configure -b -g /dev/gpt/disk0
+echo -n "${BOOT_PASSWORD}" | geli attach -j - gpt/disk0
 
 sysctl vfs.zfs.min_auto_ashift=12
 
