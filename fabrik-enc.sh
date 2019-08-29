@@ -129,34 +129,6 @@ chroot /mnt mkdir -p /usr/local/etc/rc.d
 touch /mnt/firstboot
 touch /mnt/firstboot-reboot
 
-# zfs_firstboot
-sed 's/^X//' >/mnt/usr/local/etc/rc.d/zfs_firstboot << 'ZFSFIRSTBOOT'
-X#!/bin/sh
-X
-X# KEYWORD: firstboot
-X# PROVIDE: zfs_firstboot
-X# BEFORE: LOGIN
-X
-X. /etc/rc.subr
-X
-Xname=zfs_firstboot
-Xrcvar=zfs_firstboot_enable
-Xstart_cmd="${name}_run"
-X
-Xzfs_firstboot_run()
-X{
-X       DISK=$(gpart list | awk '/Geom name/{split($0,a,": "); print a[2]}')
-X       GUID=$(zdb | awk '/children\[0\]/{flag=1; next} flag && /guid:/{split($0,arr,": "); print arr[2]; flag=0}')
-X       gpart recover ${DISK}
-X       gpart resize -i 2 ${DISK}
-X       zpool online -e zroot ${GUID} && zfs set readonly=off zroot/ROOT/default
-X}
-X
-Xload_rc_config $name
-Xrun_rc_command "$1"
-ZFSFIRSTBOOT
-chmod 0555 /mnt/usr/local/etc/rc.d/zfs_firstboot
-
 # pf_firstboot
 sed 's/^X//' >/mnt/usr/local/etc/rc.d/pf_firstboot << 'PFFIRSTBOOT'
 X#!/bin/sh
@@ -359,7 +331,6 @@ cat << EOF > /mnt/etc/rc.conf
 aws_firstboot_enable="YES"
 gce_firstboot_enable="YES"
 pf_firstboot_enable="YES"
-zfs_firstboot_enable="YES"
 zfs_enable="YES"
 gateway_enable="YES"
 hostname="fabrik" # change to your desired hostname
