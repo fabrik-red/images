@@ -222,7 +222,6 @@ options ROUTETABLES=4
 
 # encapsulating network device
 device		gre
-device		tap
 
 # Common Address Redundancy Protocol
 device		carp
