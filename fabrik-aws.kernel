@@ -1,0 +1,181 @@
+# ----------------------------------------------------------------------------
+# FABRIK: for AWS only (xen)
+# - no CARP
+# - no IPSEC
+# - no PF
+# - no USB
+# ----------------------------------------------------------------------------
+cpu		HAMMER
+ident		FABRIKAWS
+
+options 	SCHED_ULE		# ULE scheduler
+options 	NUMA			# Non-Uniform Memory Architecture support
+options 	PREEMPTION		# Enable kernel thread preemption
+options 	VIMAGE			# Subsystem virtualization, e.g. VNET
+options 	INET			# InterNETworking
+options 	INET6			# IPv6 communications protocols
+options 	IPSEC			# IP (v4/v6) security
+options 	IPSEC_SUPPORT		# Allow kldload of ipsec and tcpmd5
+options 	TCP_OFFLOAD		# TCP offload
+options 	TCP_BLACKBOX		# Enhanced TCP event logging
+options 	TCP_HHOOK		# hhook(9) framework for TCP
+options		TCP_RFC7413		# TCP Fast Open
+options 	SCTP			# Stream Control Transmission Protocol
+options 	FFS			# Berkeley Fast Filesystem
+options 	SOFTUPDATES		# Enable FFS soft updates support
+options 	UFS_ACL			# Support for access control lists
+options 	UFS_DIRHASH		# Improve performance on big directories
+options 	UFS_GJOURNAL		# Enable gjournal-based UFS journaling
+options 	QUOTA			# Enable disk quotas for UFS
+options 	MD_ROOT			# MD is a potential root device
+options 	NFSCL			# Network Filesystem Client
+options 	NFSD			# Network Filesystem Server
+options 	NFSLOCKD		# Network Lock Manager
+options 	NFS_ROOT		# NFS usable as /, requires NFSCL
+options 	MSDOSFS			# MSDOS Filesystem
+options 	CD9660			# ISO 9660 Filesystem
+options 	PROCFS			# Process filesystem (requires PSEUDOFS)
+options 	PSEUDOFS		# Pseudo-filesystem framework
+options 	GEOM_RAID		# Soft RAID functionality.
+options 	GEOM_LABEL		# Provides labelization
+options 	EFIRT			# EFI Runtime Services support
+options 	COMPAT_FREEBSD32	# Compatible with i386 binaries
+options 	COMPAT_FREEBSD4		# Compatible with FreeBSD4
+options 	COMPAT_FREEBSD5		# Compatible with FreeBSD5
+options 	COMPAT_FREEBSD6		# Compatible with FreeBSD6
+options 	COMPAT_FREEBSD7		# Compatible with FreeBSD7
+options 	COMPAT_FREEBSD9		# Compatible with FreeBSD9
+options 	COMPAT_FREEBSD10	# Compatible with FreeBSD10
+options 	COMPAT_FREEBSD11	# Compatible with FreeBSD11
+options 	SCSI_DELAY=5000		# Delay (in ms) before probing SCSI
+options 	KTRACE			# ktrace(1) support
+options 	STACK			# stack(9) support
+options 	SYSVSHM			# SYSV-style shared memory
+options 	SYSVMSG			# SYSV-style message queues
+options 	SYSVSEM			# SYSV-style semaphores
+options 	_KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
+options 	PRINTF_BUFR_SIZE=128	# Prevent printf output being interspersed.
+options 	KBD_INSTALL_CDEV	# install a CDEV entry in /dev
+options 	HWPMC_HOOKS		# Necessary kernel hooks for hwpmc(4)
+options 	AUDIT			# Security event auditing
+options 	CAPABILITY_MODE		# Capsicum capability mode
+options 	CAPABILITIES		# Capsicum capabilities
+options 	MAC			# TrustedBSD MAC Framework
+# options 	KDTRACE_FRAME		# Ensure frames are compiled in
+# options 	KDTRACE_HOOKS		# Kernel DTrace hooks
+options 	DDB_CTF			# Kernel ELF linker loads CTF data
+options 	INCLUDE_CONFIG_FILE	# Include this file in kernel
+options 	RACCT			# Resource accounting framework
+options 	RACCT_DEFAULT_TO_DISABLED # Set kern.racct.enable=0 by default
+options 	RCTL			# Resource limits
+
+# Debugging support.  Always need this:
+options		KDB			# Enable kernel debugger support.
+options		KDB_TRACE		# Print a stack trace for a panic.
+
+# Make an SMP-capable kernel by default
+options		SMP			# Symmetric MultiProcessor Kernel
+options 	EARLY_AP_STARTUP
+
+# CPU frequency control
+device		cpufreq
+
+# Bus support.
+device		acpi
+options		ACPI_DMAR
+device		pci
+
+# ATA controllers
+device		ahci			# AHCI-compatible SATA controllers
+device		ata			# Legacy ATA/SATA controllers
+options		ATA_STATIC_ID		# Static device numbering
+
+# ATA/SCSI peripherals
+device		scbus			# SCSI bus (required for ATA/SCSI)
+device		da			# Direct Access (disks)
+
+# NVM Express (NVMe) support
+device		nvme			# base NVMe driver
+device		nvd			# expose NVMe namespaces as disks, depends on nvme
+
+# atkbdc0 controls both the keyboard and the PS/2 mouse
+device		atkbdc			# AT keyboard controller
+device		atkbd			# AT keyboard
+device		kbdmux			# keyboard multiplexer
+
+# vt is the new video console driver
+device		vt
+device		vt_vga
+device		vt_efifb
+# Change kernel messages color
+options		TERMINAL_KERN_ATTR=(FG_YELLOW|BG_BLACK)
+
+# Serial (COM) ports
+device		uart			# Generic UART driver
+
+# PCI Ethernet NICs.
+device		iflib
+
+# Pseudo devices.
+device		crypto			# core crypto support
+device		loop			# Network loopback
+device		random			# Entropy device
+device		padlock_rng		# VIA Padlock RNG
+device		rdrand_rng		# Intel Bull Mountain RNG
+device		ether			# Ethernet support
+device		vlan			# 802.1Q VLAN support
+device		tuntap			# Packet tunnel.
+device		md			# Memory "disks"
+device		gif			# IPv6 and IPv4 tunneling
+device		firmware		# firmware assist module
+
+# The `bpf' device enables the Berkeley Packet Filter.
+# Be aware of the administrative consequences of enabling this!
+# Note that 'bpf' is required for DHCP.
+device		bpf			# Berkeley packet filter
+
+# Xen HVM Guest Optimizations
+# NOTE: XENHVM depends on xenpci.  They must be added or removed together.
+options		XENHVM			# Xen HVM kernel infrastructure
+device		xenpci			# Xen HVM Hypervisor services driver
+
+# vmware
+device		vmx
+
+#Netmap provides direct access to TX/RX rings on supported NICs
+device		netmap                  # netmap(4) support
+
+# The crypto framework is required by IPSEC
+device		aesni
+device		enc
+
+# nullfs
+options		NULLFS
+options		FDESCFS
+options		TMPFS
+
+# WATCH
+device		snp
+
+# zpty
+device		pty
+
+# disk encryption
+options		GEOM_ELI
+
+# ena - FreeBSD kernel driver for Elastic Network Adapter (ENA) Family
+device		ena
+
+# nginx accept_filter=(dataready|httpready)
+options ACCEPT_FILTER_HTTP
+options ACCEPT_FILTER_DATA
+
+# ntp
+options MAC
+options MAC_NTPD
+
+# vnet jails
+device	if_bridge
+device	epair
+
+# vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab:

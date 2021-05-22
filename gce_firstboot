@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# KEYWORD: firstboot
+# PROVIDE: gce_firstboot
+# REQUIRE: NETWORKING
+# BEFORE: LOGIN
+
+: ${user=devops}
+
+. /etc/rc.subr
+
+name=gce_firstboot
+rcvar=gce_firstboot_enable
+start_cmd="${name}_run"
+
+SSHKEYURL="http://169.254.169.254/computeMetadata/v1/project/attributes/keys"
+
+gce_firstboot_run()
+{
+        eval SSHKEYFILE="~${user}/.ssh/authorized_keys"
+
+        echo "Fetching SSH public key GCE"
+        mkdir -p `dirname ${SSHKEYFILE}`
+        chmod 700 `dirname ${SSHKEYFILE}`
+        chown ${user} `dirname ${SSHKEYFILE}`
+        /usr/local/bin/curl --connect-timeout 5 -s -H "Metadata-Flavor: Google" -f ${SSHKEYURL} -o ${SSHKEYFILE}.gce
+        if [ -f ${SSHKEYFILE}.gce ]; then
+                touch ${SSHKEYFILE}
+                sort -u ${SSHKEYFILE} ${SSHKEYFILE}.gce > ${SSHKEYFILE}.tmp
+                mv ${SSHKEYFILE}.tmp ${SSHKEYFILE}
+                chown ${user} ${SSHKEYFILE}
+                rm ${SSHKEYFILE}.gce
+        else
+                echo "Fetching SSH public key failed!"
+        fi
+}
+
+load_rc_config $name
+run_rc_command "$1"
