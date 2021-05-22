@@ -30,7 +30,7 @@ if [ -d /usr/src ]; then
 else
    git clone -b stable/${FREEBSD_VERSION} https://git.freebsd.org/src.git /usr/src
 fi
-(cd /usr/src; git checkout -b stable/${FREEBSD_VERSION} && git pull)
+(cd /usr/src; git checkout stable/${FREEBSD_VERSION} && git pull)
 
 write "Fetching src.conf, src-jail.conf, make.conf, fabrik.kernel"
 fetch --no-verify-peer -a https://raw.githubusercontent.com/fabrik-red/images/master/src.conf -o /etc/fabrik-src.conf
