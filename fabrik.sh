@@ -122,11 +122,9 @@ chroot /mnt pw useradd ${USER} -m -G wheel -s /bin/csh -h 0 <<EOP
 ${PASSWORD}
 EOP
 
-cp /etc/resolv.conf /mnt/etc/resolv.conf
-
 write "Installing curl"
-yes | chroot /mnt /usr/bin/env ASSUME_ALWAYS_YES=yes pkg install -qy curl > /dev/null 2>&1
-chroot /mnt /usr/bin/env ASSUME_ALWAYS_YES=yes pkg clean -qya > /dev/null 2>&1
+ASSUME_ALWAYS_YES=yes pkg -c /mnt install -y curl > /dev/null 2>&1
+ASSUME_ALWAYS_YES=yes pkg -c /mnt clean -ya > /dev/null 2>&1
 rm -rf /mnt/var/db/pkg/repo*
 
 write "Creating firstboot scripts"
