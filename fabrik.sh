@@ -123,6 +123,7 @@ ${PASSWORD}
 EOP
 
 write "Installing curl"
+chroot /mnt mknod dev/null c 2 2
 ASSUME_ALWAYS_YES=yes pkg -c /mnt install -y curl > /dev/null 2>&1
 ASSUME_ALWAYS_YES=yes pkg -c /mnt clean -ya > /dev/null 2>&1
 rm -rf /mnt/var/db/pkg/repo*
